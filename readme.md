@@ -11,7 +11,6 @@
 ### design_pattern
 - ファクトリーメソッド<br>
 https://github.com/rtakasawa/DailyCode/blob/master/design_pattern/factory_method.rb
-<br>
 https://github.com/rtakasawa/DailyCode/blob/master/images/factory_method.png
 
 ### Ruby
