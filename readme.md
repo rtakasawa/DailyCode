@@ -14,6 +14,9 @@ https://github.com/rtakasawa/DailyCode/blob/master/design_pattern/factory_method
 https://github.com/rtakasawa/DailyCode/blob/master/images/factory_method.png
 
 ### Ruby
+- RailsサーバとRedisとSidekiqの関係（図）
+  https://github.com/rtakasawa/DailyCode/blob/9bf3b1960bc4360cad6fc97f2a9c2bfa60746754/images/rails_redis_sidekiq.png
+
 #### File
 - zip_fileを解凍して,中身（file）をDB（ActiveStorage）に保存する
 https://github.com/rtakasawa/DailyCode/blob/master/ruby/File/unzip.rb
