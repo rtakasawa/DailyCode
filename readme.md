@@ -9,6 +9,12 @@
   - [code](https://github.com/rtakasawa/DailyCode/blob/master/code_design/argument.rb)
 
 ### design_pattern
+- アダプタ
+  - using_scene
+    - 既存のクラスやメソッドを、変更して使いたい。（現状の使用箇所に影響がないように）
+    - 既存のクラスやメソッドを、使用できない場所も使いたい。（現状の使用箇所に影響がないように）
+  - sample
+    - [code](https://github.com/rtakasawa/DailyCode/blob/master/design_pattern/adapter.rb)
 - アブストラクトファクトリー
   - using_scene
     - 関連するオブジェクトをまとめて生成する必要があるとき
