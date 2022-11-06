@@ -10,17 +10,19 @@
 
 ### design_pattern
 - アブストラクトファクトリー
-  - まとめ
+  - using_scene
+    - 関連するオブジェクトをまとめて生成する必要があるとき
+  - sample
     - [code](https://github.com/rtakasawa/DailyCode/blob/master/design_pattern/abstract_factory.rb)
 - ファクトリーメソッド<br>
-  - まとめ
+  - using_scene
+    - オブジェクトを作成するプロセスが共通している場合
+  - sample
     - [code](https://github.com/rtakasawa/DailyCode/blob/master/design_pattern/factory_method.rb)
     - [image](https://github.com/rtakasawa/DailyCode/blob/master/images/factory_method.png)
-  - 練習
+  - practice
     - [code](https://github.com/rtakasawa/DailyCode/blob/3ee6d64c273226123fa9de808b41b83e2fca9f40/design_pattern/factory_method_practice.rb)
     - [image](https://github.com/rtakasawa/DailyCode/blob/3ee6d64c273226123fa9de808b41b83e2fca9f40/images/factory_method_practice.png)
-
-
 
 ### Ruby
 - RailsサーバとRedisとSidekiqの関係（図）
