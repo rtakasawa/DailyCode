@@ -9,6 +9,9 @@
   - [code](https://github.com/rtakasawa/DailyCode/blob/master/code_design/argument.rb)
 
 ### design_pattern
+- アブストラクトファクトリー
+  - まとめ
+
 - ファクトリーメソッド<br>
   - まとめ
     - [code](https://github.com/rtakasawa/DailyCode/blob/master/design_pattern/factory_method.rb)
@@ -16,6 +19,8 @@
   - 練習
     - [code](https://github.com/rtakasawa/DailyCode/blob/3ee6d64c273226123fa9de808b41b83e2fca9f40/design_pattern/factory_method_practice.rb)
     - [image](https://github.com/rtakasawa/DailyCode/blob/3ee6d64c273226123fa9de808b41b83e2fca9f40/images/factory_method_practice.png)
+
+
 
 ### Ruby
 - RailsサーバとRedisとSidekiqの関係（図）
