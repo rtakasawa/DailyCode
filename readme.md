@@ -11,7 +11,7 @@
 ### design_pattern
 - アブストラクトファクトリー
   - まとめ
-
+    - [code](https://github.com/rtakasawa/DailyCode/blob/master/design_pattern/abstract_factory.rb)
 - ファクトリーメソッド<br>
   - まとめ
     - [code](https://github.com/rtakasawa/DailyCode/blob/master/design_pattern/factory_method.rb)
