@@ -25,6 +25,11 @@
     - オブジェクトを作る時に大量の処理が必要な場合
   - sample
     - [code](https://github.com/rtakasawa/DailyCode/blob/master/design_pattern/builder.rb)
+- Command
+  - using_scene
+    - 特定のタスクを実行したい場合
+  - sample
+    - [code](https://github.com/rtakasawa/DailyCode/blob/master/design_pattern/command.rb)
 - ファクトリーメソッド<br>
   - using_scene
     - オブジェクトを作成するプロセスが共通している場合
