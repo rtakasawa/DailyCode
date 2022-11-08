@@ -30,6 +30,11 @@
     - 特定のタスクを実行したい場合
   - sample
     - [code](https://github.com/rtakasawa/DailyCode/blob/master/design_pattern/command.rb)
+- Composite
+  - using_scene
+    - 階層構造で表現されるオブジェクトの場合
+  - sample
+    - [code](https://github.com/rtakasawa/DailyCode/blob/master/design_pattern/conposite.rb)
 - ファクトリーメソッド<br>
   - using_scene
     - オブジェクトを作成するプロセスが共通している場合
