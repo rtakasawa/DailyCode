@@ -49,6 +49,11 @@
   - practice
     - [code](https://github.com/rtakasawa/DailyCode/blob/3ee6d64c273226123fa9de808b41b83e2fca9f40/design_pattern/factory_method_practice.rb)
     - [image](https://github.com/rtakasawa/DailyCode/blob/3ee6d64c273226123fa9de808b41b83e2fca9f40/images/factory_method_practice.png)
+- Interpreter
+  - using_scene
+    - 構造木に沿った処理を実現する場合
+  - sample
+    - [code](https://github.com/rtakasawa/DailyCode/blob/master/design_pattern/interpreter.rb)
 
 ### Ruby
 - RailsサーバとRedisとSidekiqの関係（図）
