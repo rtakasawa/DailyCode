@@ -35,6 +35,11 @@
     - 階層構造で表現されるオブジェクトの場合
   - sample
     - [code](https://github.com/rtakasawa/DailyCode/blob/master/design_pattern/conposite.rb)
+- Decorator
+  - using_scene
+    - 既存オブジェクトに機能を追加したい場合
+  - sample
+    - [code](https://github.com/rtakasawa/DailyCode/blob/master/design_pattern/decorator.rb) 
 - ファクトリーメソッド<br>
   - using_scene
     - オブジェクトを作成するプロセスが共通している場合
