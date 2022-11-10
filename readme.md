@@ -54,6 +54,12 @@
     - 構造木に沿った処理を実現する場合
   - sample
     - [code](https://github.com/rtakasawa/DailyCode/blob/master/design_pattern/interpreter.rb)
+- Iterator
+  - using_scene
+    - 要素の集まったオブジェクト（配列等）にアクセスする場合
+    - 集合の要素に順にアクセスする必要がある
+  - sample
+    - [code](https://github.com/rtakasawa/DailyCode/blob/master/design_pattern/iterator.rb)
 
 ### Ruby
 - RailsサーバとRedisとSidekiqの関係（図）
