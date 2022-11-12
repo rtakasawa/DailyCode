@@ -68,6 +68,12 @@
     - ※例:Aで起きたイベントをB, Cが知る必要がある場合
   - sample
     - [code](https://github.com/rtakasawa/DailyCode/blob/master/design_pattern/observer.rb)
+- Proxy
+  - using_scene
+    - 1つのオブジェクトに複数の関心事がある場合に、関心事を分離するために使う
+    - オブジェクトの本質的な目的とは異なる要件を分離できる
+  - sample
+    - [code](https://github.com/rtakasawa/DailyCode/blob/master/design_pattern/proxy.rb)
 
 ### Ruby
 - RailsサーバとRedisとSidekiqの関係（図）
