@@ -60,6 +60,14 @@
     - 集合の要素に順にアクセスする必要がある
   - sample
     - [code](https://github.com/rtakasawa/DailyCode/blob/master/design_pattern/iterator.rb)
+- Observer
+  - using_scene
+    - 次の条件を満たす場合にオブザーバパターンを使う。
+      - オブジェクトの状態が変化する可能性がある
+      - 変化したことをほかのオブジェクトに通知する必要がある
+    - ※例:Aで起きたイベントをB, Cが知る必要がある場合
+  - sample
+    - [code](https://github.com/rtakasawa/DailyCode/blob/master/design_pattern/observer.rb)
 
 ### Ruby
 - RailsサーバとRedisとSidekiqの関係（図）
