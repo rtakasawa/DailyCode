@@ -74,6 +74,9 @@
     - オブジェクトの本質的な目的とは異なる要件を分離できる
   - sample
     - [code](https://github.com/rtakasawa/DailyCode/blob/master/design_pattern/proxy.rb)
+- Strategy
+  - sample
+    - [code](https://github.com/rtakasawa/DailyCode/blob/master/design_pattern/strategy.rb)
 - Singleton
   - using_scene
     - 一つだけに限定されたインスタンスを複数のオブジェクト内で共有する場合

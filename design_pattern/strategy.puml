@@ -1,0 +1,30 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class Context {
+strategy
+contextMethod()
+}
+
+class Strategy {
+strategyMethod()
+}
+
+class ConcreteStrategy1 {
+strategyMethod()
+}
+
+class ConcreteStrategy2 {
+strategyMethod()
+}
+
+'abstract class AbstractList
+'abstract AbstractCollection
+'interface List
+'interface Collection
+
+Strategy <|-- ConcreteStrategy1
+Strategy <|-- ConcreteStrategy2
+Context o-- Strategy
+
+@enduml
