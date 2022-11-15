@@ -75,6 +75,8 @@
   - sample
     - [code](https://github.com/rtakasawa/DailyCode/blob/master/design_pattern/proxy.rb)
 - Strategy
+  - using_scene
+    - オブジェクト内に複雑なアルゴリズムがある場合
   - sample
     - [code](https://github.com/rtakasawa/DailyCode/blob/master/design_pattern/strategy.rb)
 - Singleton
@@ -82,6 +84,10 @@
     - 一つだけに限定されたインスタンスを複数のオブジェクト内で共有する場合
   - sample
     - [code](https://github.com/rtakasawa/DailyCode/blob/master/design_pattern/singleton.rb)
+
+### 「Java言語で学ぶデザインパターン入門」をrubyに書き換え
+- Strategy
+  - [code](https://github.com/rtakasawa/DailyCode/blob/master/design_pattern/java_convert/strategy.rb)    
 
 ### Ruby
 - RailsサーバとRedisとSidekiqの関係（図）
