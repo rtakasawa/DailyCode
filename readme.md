@@ -84,6 +84,11 @@
     - 一つだけに限定されたインスタンスを複数のオブジェクト内で共有する場合
   - sample
     - [code](https://github.com/rtakasawa/DailyCode/blob/master/design_pattern/singleton.rb)
+- Template
+  - using_scene
+    - 2つのコードのやりたいこと（アルゴリズム）がほとんど同じで、一部を変えたい場合
+  - sample
+    - [code](https://github.com/rtakasawa/DailyCode/blob/master/design_pattern/template.rb)
 
 ### 「Java言語で学ぶデザインパターン入門」をrubyに書き換え
 - Strategy
