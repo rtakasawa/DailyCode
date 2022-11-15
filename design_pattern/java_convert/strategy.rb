@@ -135,6 +135,16 @@ class ProbStrategy
   end
 end
 
+# Strategyインターフェイスの実装クラス
+# じゃんけんの具体的な「戦略」のためのメソッド
+# 戦略：
+# - でたらめな手を出す
+class RandomStrategy
+  def next_hand
+    Hand.get_hand(rand(0..2))
+  end
+end
+
 class Player
   # 名前と戦略を授けてプレイヤーを作る
   def initialize(name, strategy)
