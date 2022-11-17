@@ -307,3 +307,274 @@
     1. 頭の中にあるコメントをそのまま書く
     2. 1を読んで、改善が必要な箇所を見つける
     3. 改善する
+
+## コメントは正確に簡潔に
+- [ ]  曖昧な代名詞を使っていないか
+    
+    ```ruby
+    # bad
+    # データをキャッシュに入れる。ただし、先にそのサイズをチェックする。
+    
+    # good
+    # データをキャッシュに入れる。ただし、先にデータのサイズをチェックする。
+    # データが十分小さければ、そのデータをキャッシュに入れる。
+    ```
+    
+- [ ]  メソッドの動作を正確にコメントしているか
+    
+    ```ruby
+    # bad
+    # このファイルに含まれる行数を返す。
+    def count_lines(file)
+    end
+    
+    # good
+    # このファイルに含まれる改行文字（\ｎ）の数を返す。
+    def count_lines(file)
+    end
+    ```
+    
+- [ ]  実例を使う
+    
+    ```ruby
+    # bad
+    # srcの先頭や末尾にあるcharsを除去する。
+    def strip(src, chars)
+    end
+    
+    # good
+    # srcの先頭や末尾にあるcharsを除去する。
+    # 例：strip('ab', 'a')の場合、aを返す
+    def strip(src, chars)
+    end
+    ```
+    
+- [ ]  情報密度の高いコメントを使えているか
+
+## 制御フローを読みやすくする
+- [ ]  条件式の引数の並び順
+    
+    ```ruby
+    # 左側：調査対象の式（変化する）
+    # 右側：比較対象の式（あまり変化しない）
+    
+    # bad
+    if 10<= length
+    
+    # good
+    if length >= 10
+    ```
+    
+- [ ]  if/elseブロックの並び順
+    - 並び順の優劣
+        - 条件は肯定形を使う
+            
+            ```ruby
+            # bad
+            if a != b
+            else
+            end
+            
+            # good
+            if a == b
+            else
+            end
+            ```
+            
+        - 単純な条件を先に書く
+        - 関心を引く条件、目立つ条件を先に書く
+            
+            ```ruby
+            if not_file
+            	# Errorログを記録す
+            else
+            end
+            ```
+            
+- [ ]  三項演算子
+    - 基本的にはif/elseを使う
+        
+        ```ruby
+        #bad
+        exponent >= 0 ? mantissa * (1 << exponent) : mantissa / (1 << - exponent)
+        
+        #good
+        if exponent >= 0
+        	mantissa * (1 << exponent)
+        else
+        	mantissa / (1 << exponent)
+        end
+        ```
+        
+    - 簡潔になるときだけ、三項演算子を使う
+        
+        ```ruby
+        #bad
+        if hour >= 12
+        	time_str += "pm"
+        else
+        	time_str += "am"
+        end
+        
+        #good
+        time_str += hour >= 12 ? "pm" : "am"
+        ```
+        
+- [ ]  関数から早く返す
+    - ガード節を使う
+- [ ]  ネストを浅くする
+    - ネストが増える仕組み
+        
+        ```ruby
+        # first code
+        if user == SUCCESS
+        	reply.WriteErrors('')
+        else
+        	reply.WriteErrors(user_result)
+        end
+        
+        reply
+        
+        # second code
+        # 条件を追加 →　ネストが深くなった。分かりづらくなった。
+        if user == SUCCESS
+        	if permission_result != SUCCESS
+        		reply.WriteErrors('error reading permissions')
+        		reply
+            return
+        	end
+        	reply.WriteErrors('')
+        else
+        	reply.WriteErrors(user_result)
+        end
+        ```
+        
+    - [ ]  早めに返してネストを削除する
+        
+        ```ruby
+        if user_result != SUCCESS
+        	reply.WriteErrors(user_result)
+        	reply
+        	return
+        end
+        
+        if permission_result != SUCCESS
+        	reply.WriteErrors('error reading permissions')
+        	reply
+          return
+        end
+        
+        reply.WriteErrors('')
+        reply
+        ```
+        
+    - [ ]  ループ内のネストを削除する
+        
+        ```java
+        // bad
+        for (int i = 0; i < results.size(); i++) {
+        	if (results[i] != NULL) {
+        		non_null_count++;
+        
+        		if (results[i]->name != "") {
+        				coun << "Considering candidate ...." << end1;
+        		}
+        	}
+        }
+        
+        // good
+        // if・・・continueを使って処理をskipする
+        // rubyだとnext if文となる
+        for (int i = 0; i < results.size(); i++) {
+        	if (results[i] == NULL) continue;
+        	non_null_count++;
+        
+        	if (results[i]->name == "") continue;
+        	coun << "Considering candidate ...." << end1;
+        }
+        ```
+        
+
+## 巨大な式を分割する
+- [ ]  説明変数を使う
+
+   ```ruby
+   # bad
+   if line.split(':')[0].strip == "root"
+      
+   # good
+   # 比較対象が分かりやすくなった
+   user_name = line.split(':')[0].strip
+   if user_name == "root"
+   ```
+      
+- [ ]  要約変数を使う
+    
+   ```ruby
+   # bad
+   if request.user.id == document.owner.id
+   end
+      
+   if request.user.id != document.owner.id
+   end
+      
+   # good
+   # 変数を個別に読む必要がなくなった
+   user_owns_document = request.user.id == document.owner_id
+      
+   if user_owns_document
+   end
+      
+   if !user_owns_document
+   end
+   ```
+      
+- [ ]  ド・モルガンの法則を使う
+    
+   ```markdown
+   - notを分配してand/orを反転する
+   not (a or b or c) ⇔　(not a) and (not b) and (not c)
+   not (a and b and c) ⇔　(not a) and (not b) and (not c)
+   ```
+      
+   ```ruby
+   # bad
+   if (!(file_exists && !is_protected))
+   end
+      
+   # good
+   if (!file_exists || is_protected)
+   end
+   ```
+      
+- [ ]  短絡評価の悪用
+    
+   ```java
+   # bad
+   assert((!(bucket = FindBucket(key))) || !bucket->IsOccupied());
+      
+   # good
+   # 2行になったけど読みやすくなった!
+   bucket = FindBucket(key);
+   if (bucket != NULL) assert(!bucket->IsOccupied());
+   ```
+
+- 複雑なロジックと格闘する
+    - [ ]  より優雅な手法を考える
+        - 「反対」から解決する
+            - 例
+                - 配列を逆順にイテレーターとする
+                - データを後ろから挿入する
+            
+            ```java
+            //仕様：beginまたはendがotherの中にあるか確認する
+            
+            // bad
+            (begin >= other.begin && begin < other.end) ||
+            (end > other.begin && end <= other.end) ||
+            (begin <= other.begin && end >= other.end);
+            
+            //good
+            if (other.end <= begin) return false; // 一方の終点が、この終点より前にある
+            if (other.begin >= end) return false; // 一方の始点が、この終点より後にある
+            ```
