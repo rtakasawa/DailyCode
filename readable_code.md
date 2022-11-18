@@ -578,3 +578,84 @@
             if (other.end <= begin) return false; // 一方の終点が、この終点より前にある
             if (other.begin >= end) return false; // 一方の始点が、この終点より後にある
             ```
+
+## 変数と読みやすさ
+- [ ]  不要な変数を削除する
+    - 不要な変数
+        - コードが読みやすくならない変数
+        - 不要な変数 ≠ 説明変数
+        - 不要な変数 ≠ 要約変数
+    - [ ]  役に立たない一時変数
+
+       ```java
+       # bad
+       # now:複雑な式を分解していない
+       # now:datetime.datetime.now()のままでも意味が通じる
+       # now:1度しか使っていないので、重複削除になっていない
+       now = datetime.datetime.now()
+       root_message.last_view_time = now
+       
+       # good
+       root_message.last_view_time = datetime.datetime.now()
+       ```
+
+    - [ ]  中間結果を削除する
+
+       ```jsx
+       # bad
+       # index_to_remove:中間結果を保持するためだけに使っているので、削除できる。
+       var remove_one = function (array, value_to_remove) {
+           var index_to_remove = null;
+           for (var i = 0; i < arrary.length; i += 1) {
+               if (array[i] === value_to_remove) {
+                   index_to_remove = i;
+                   break;
+               }
+           }
+           if (index_to_remove != null) {
+               array.splice(index_to_remove, 1);
+           }
+       };
+       
+       # good
+       var remove_one = function (array, value_to_remove) {
+           for (var i = 0; i < array.length; i += 1) {
+               if(array[i] === value_to_remove) {
+                   array.splice(i, 1);
+                   return;
+               }
+           }
+       };
+       ```
+
+    - [ ]  制御フロー変数を削除する
+
+       ```java
+       # bad
+       # doneはプログラミングを制御するための変数
+       # 実際のプログラミングに関係のあるデータは保持していない
+       # 制御フロー変数という
+       boolean done = false;
+       while (/* 条件 */ && !done) {
+           ・・・
+           if(・・・) {
+                   done = true;
+                   continue;
+           }
+       }
+       
+       # good
+       # 制御フロー変数は削除できる
+       boolean done = false;
+       while (/* 条件 */) {
+           ・・・
+           if(・・・) {
+               break;
+           }
+       }
+       ```
+
+        - breakが使えないようなネストが何段階もあるループの場合
+            - コードを新しいメソッドに移動する
+                - ループ内部のコード
+                - ループ全体
