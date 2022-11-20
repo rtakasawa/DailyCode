@@ -836,4 +836,185 @@
                 	}
                 };			
                 ```
-              
+
+- 無関係の下位問題を抽出する
+    - [ ]  無関係の下位問題を抽出して、別のメソッドに処理を移動する
+        1. メソッドやコードブロックを見て、「このコードの高レベル目標は何か？」を自問する。
+        2. コードの各行にたいして、「高レベル目標に直接効果があるのか？あるいは、無関係の下位問題を解決しているのか？」と自問する。
+        3. 無関係の下位問題を解決しているコードが相当量あれば、それらを抽出して別の関数にする。
+
+       ```jsx
+       //bad
+       // 与えられた緯度経度に最も近いarrayの要素を返す
+       // 地球が完全な球体であることを前提としている
+       var findClosestLocation = function (lat, lng, array) {
+           var closest;
+           var closest_dist = Number.MAX_VALUE;
+           for (var i = 0; i < array.length; i += 1) {
+               // 2つの地点をラジアンに変換する
+               var lat_rad = radians(lat);
+               var lng_rad = radians(lng);
+               var lat2_rad = radians(array[i].latitude);
+               var lng2_rad = radians(array[i].lomgitude);
+       
+               // 「球面三角法の第二余弦定理」の公式を使う
+               var dist = Math.acos(Math.sin(lat_rad) * Math.sin(lat2_rad) +
+                                    Math.cos(lat_rad) * Math.cos(lat2_rad) *
+                                    Math.cos(lon2_red - lng_rad));
+               if (dist < closest_dist) {
+                   closest = array[i];
+                   closest_dist = dist;
+               }
+           }
+           return closest;
+       };
+       
+       // good
+       // 無関係の下位問題を別メソッドにする →　2つの地点（軽度緯度）の球面距離を算出する
+       var spherical_distance = function (lat1, lng1, lat2, lng2) {
+                   // 2つの地点をラジアンに変換する
+               var lat_rad = radians(lat);
+               var lng_rad = radians(lng);
+               var lat2_rad = radians(array[i].latitude);
+               var lng2_rad = radians(array[i].lomgitude);
+       
+               // 「球面三角法の第二余弦定理」の公式を使う
+               retunr Math.acos(Math.sin(lat_rad) * Math.sin(lat2_rad) +
+                            Math.cos(lat_rad) * Math.cos(lat2_rad) *
+                            Math.cos(lon2_red - lng_rad));
+       };
+       
+       // 良かったこと
+       // ・難しい処理を別メソッドにしたことで、コードが読みやすくなった。
+       // ・spherical_distanceをメソッドに切り出したことで、spherical_distanceを個別にテストできる
+       var findClosestLocation = function (lat, lng, array) {
+           var closest;
+           var closest_dist = Number.MAX_VALUE;
+           for (var i = 0; i < array.length; i += 1) {
+               var dist = spherical_distance(lat, lng, array[i].latitude, array[i].longotde);
+               if (dist < closest_dist) {
+                   closest = array[i];
+                   closest_dist = dist;
+               }
+           }
+           return closest;
+       };
+       ```
+
+    - [ ]  プログラムの核となる基本的なタスクはメソッド化する
+        - 複数のプロジェクトで使いまわしできる
+    - [ ]  汎用コードを作る
+
+       ```jsx
+       // bad
+       // サーバーをAjaxで呼び出してレスポンスを処理する
+       ajax_post({
+           url: 'http://example.com/submit',
+           data: data,
+           on_success: function (response_data) {
+               var str = "{\n";
+               for (var key in response_data) {
+                   str += " " + key + " + response_data[key] + "\n";
+               }
+               alert(str + "}");
+               
+               // 引き続きresponse_dataの処理
+           }
+       });
+       
+       // good
+       // 無関係の下位問題を別メソッドにする →　「ディクショナリをきれいに印字する」を別メソッドにする
+       // 良かったこと
+       // ・呼び出し側のコード（ajax_post）が完結になる
+       // ・format_prettyが再利用できる
+       // ・format_prettyの改善が簡単になる
+       var format_pretty = function (obj) {
+           var str = "{\n";
+           for (var key in response_data) {
+               str += " " + key + " + response_data[key] + "\n";
+           }
+           return str + "}";
+       };
+       
+       ajax_post({
+           url: 'http://example.com/submit',
+           data: data,
+           on_success: function (response_data) {
+               alert(format_pretty(response_data));
+               
+               // 引き続きresponse_dataの処理
+           }
+       });
+       
+       // more_good
+       // format_prettyに機能追加をした
+       var format_pretty = function (obj, indent) {
+           // null,undefind,文字列,非オブジェクトを処理する
+           if (obj === null) return "null";
+           if (obj === undefind) return "undefind";
+           if (typeof obj === "string") return '"' + obj + '"';
+           if (typeof obj !== "object") return String(obj);
+           if (indent === undefind) indent = "";
+       
+           var str = "{\n";
+           for (var key in obj) {
+               str += indent + " " + key + " = ";
+               str += format_pretty(obj[key], indent + " ") + "\n";
+           }
+           return str + indent + "}";
+       };
+       ```
+
+        - 汎用コードは簡単に共有できるように特別なディレクトリを用意する
+    - [ ]  プロジェクトに特化した機能から無関係の下位問題を抽出する
+
+       ```python
+       # bad
+       # 新しいbusinessオブジェクト作って、name,url,date_createdを設定する
+       bussiness = Business();
+       bussiness.name = request.POST["name"]
+       
+       # nameを有効なurlに変換する
+       url_path_name = business.name.lower()
+       url_path_name = re.sub(r"['\.]", "", url_path_name)
+       url_path_name = re.sub(r"[^a-z0-9]+", "-", url_path_name)
+       url_path_name = url_path_name.strip("-")
+       business.url = "/biz/" + url_path_name
+       
+       business.date_created = datetime.datetime.utcnow()
+       bussiness.save_to_database()
+       
+       # good
+       # 「nameを有効なurlに変換する」をメソッド化した
+       CHARS_TO_REMOVE = re.compile(r"['\.]+")
+       CHARS_TO_DASH = re.compile(r"[^a-z0-9]+")
+       
+       def make_url_friendly(text);
+           text = text.lower()
+           text = CHARS_TO_REMOVE.sub('', text)
+           text = CHARS_TO_DASH.sub('-', text)
+           return text.strip('-')
+       
+       bussiness = Business();
+       bussiness.name = request.POST["name"]
+       business.url = "/biz/" + make_url_friendly(business.name)
+       business.date_created = datetime.datetime.utcnow()
+       bussiness.save_to_database()
+       ```
+
+    - [ ]  既存のインターフェイスを簡潔にする
+
+       ```jsx
+       // bad
+       // max_resultsという名前のクッキーを読み込むコード
+       var max_results;
+       var cokkises = document.cookie.split(';');
+       for (var i = 0; i < cookies.length; i++) {
+           var c = cookies[i];
+           c = c.replace(/^[ ]+/, '')
+           if (c.indexOf("max_results=") === 0)
+               max_results = Number(c.substring(12, c.length));
+       }
+       
+       var max_results = Number(get_cookie("max_results"));
+       ```
