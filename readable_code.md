@@ -580,195 +580,260 @@
             ```
 
 ## 変数と読みやすさ
-- [ ]  不要な変数を削除する
-    - 不要な変数
-        - コードが読みやすくならない変数
-        - 不要な変数 ≠ 説明変数
-        - 不要な変数 ≠ 要約変数
-    - [ ]  役に立たない一時変数
+- まとめ（先に）
+    - [ ]  一度だけ書き込む変数を使う（定数ももちろん良い）
+    - [ ]  邪魔な変数は削除する
+        - 中間結果の変数
+        - 一時変数
+        - 制御フロー変数
+    - [ ]  変数のスコープはできるだけ小さくする
+- 詳細
+    - [ ]  不要な変数を削除する
+        - 不要な変数
+            - コードが読みやすくならない変数
+            - 不要な変数 ≠ 説明変数
+            - 不要な変数 ≠ 要約変数
+        - [ ]  役に立たない一時変数
 
-       ```java
-       # bad
-       # now:複雑な式を分解していない
-       # now:datetime.datetime.now()のままでも意味が通じる
-       # now:1度しか使っていないので、重複削除になっていない
-       now = datetime.datetime.now()
-       root_message.last_view_time = now
-       
-       # good
-       root_message.last_view_time = datetime.datetime.now()
-       ```
+           ```java
+           # bad
+           # now:複雑な式を分解していない
+           # now:datetime.datetime.now()のままでも意味が通じる
+           # now:1度しか使っていないので、重複削除になっていない
+           now = datetime.datetime.now()
+           root_message.last_view_time = now
+           
+           # good
+           root_message.last_view_time = datetime.datetime.now()
+           ```
 
-    - [ ]  中間結果を削除する
+        - [ ]  中間結果を削除する
 
-       ```jsx
-       # bad
-       # index_to_remove:中間結果を保持するためだけに使っているので、削除できる。
-       var remove_one = function (array, value_to_remove) {
-           var index_to_remove = null;
-           for (var i = 0; i < arrary.length; i += 1) {
-               if (array[i] === value_to_remove) {
-                   index_to_remove = i;
+           ```jsx
+           # bad
+           # index_to_remove:中間結果を保持するためだけに使っているので、削除できる。
+           var remove_one = function (array, value_to_remove) {
+               var index_to_remove = null;
+               for (var i = 0; i < arrary.length; i += 1) {
+                   if (array[i] === value_to_remove) {
+                       index_to_remove = i;
+                       break;
+                   }
+               }
+               if (index_to_remove != null) {
+                   array.splice(index_to_remove, 1);
+               }
+           };
+           
+           # good
+           var remove_one = function (array, value_to_remove) {
+               for (var i = 0; i < array.length; i += 1) {
+                   if(array[i] === value_to_remove) {
+                       array.splice(i, 1);
+                       return;
+                   }
+               }
+           };
+           ```
+
+        - [ ]  制御フロー変数を削除する
+
+           ```java
+           # bad
+           # doneはプログラミングを制御するための変数
+           # 実際のプログラミングに関係のあるデータは保持していない
+           # 制御フロー変数という
+           boolean done = false;
+           while (/* 条件 */ && !done) {
+               ・・・
+               if(・・・) {
+                       done = true;
+                       continue;
+               }
+           }
+           
+           # good
+           # 制御フロー変数は削除できる
+           boolean done = false;
+           while (/* 条件 */) {
+               ・・・
+               if(・・・) {
                    break;
                }
            }
-           if (index_to_remove != null) {
-               array.splice(index_to_remove, 1);
-           }
-       };
-       
-       # good
-       var remove_one = function (array, value_to_remove) {
-           for (var i = 0; i < array.length; i += 1) {
-               if(array[i] === value_to_remove) {
-                   array.splice(i, 1);
-                   return;
+           ```
+
+            - breakが使えないようなネストが何段階もあるループの場合
+                - コードを新しいメソッドに移動する
+                    - ループ内部のコード
+                    - ループ全体
+        - [ ]  変数のスコープを縮める
+            - [ ]  変数のことが見えるコード行数をできるだけ減らす
+                - 考えなければいけない変数の量を減らせるから
+
+               ```java
+               // bad
+               class LangeClass {
+                   // インスタンス変数は2箇所で使用している
+                   string str_;
+               
+                   void Method1() {
+                       str_ = ・・・;
+                       Methodd2();
+                   }
+               
+                   void Method2() {
+                       // str_を使っている
+                   }
+               
+                   // str_を使っていないメソッドがたくさんある
+               };
+               
+               // good
+               class LangeClass {
+                   void Method1() {
+                       // インスタンス変数をローカル変数に格下げした
+                       // 格下げしたことで、インスタンス変数の値の状況を追跡する必要がない
+                       string str_ = ・・・;
+                       Methodd2();
+                   }
+               
+                   void Method2(string str) {
+                       // str_を使っている
+                   }
+               
+                   // その他のメソッドがstrが見えない
+               };
+               ```
+
+            - [ ]  if文のscope
+
+               ```cpp
+               // bad
+               PaymentInfo* info = database.ReadPaymentInfo();
+               if (info) {
+                   cout << "User paid: " << info ->amount() << end1;
                }
-           }
-       };
-       ```
+               
+               // good
+               // infoが必要なのはif文の中だけなので、条件式でinfoを定義している
+               if (PaymentInfo* info = database.ReadPaymentInfo()) {
+                   cout << "User paid: " << info ->amount() << end1;
+               }
+               ```
 
-    - [ ]  制御フロー変数を削除する
+            - [ ]  グローバル変数をクロージャーで包む（Javascript）
+                - クロージャとは  
+               関数とその関数が定義された状態をセットにした特殊なオブジェクト
 
-       ```java
-       # bad
-       # doneはプログラミングを制御するための変数
-       # 実際のプログラミングに関係のあるデータは保持していない
-       # 制御フロー変数という
-       boolean done = false;
-       while (/* 条件 */ && !done) {
-           ・・・
-           if(・・・) {
-                   done = true;
-                   continue;
-           }
-       }
-       
-       # good
-       # 制御フロー変数は削除できる
-       boolean done = false;
-       while (/* 条件 */) {
-           ・・・
-           if(・・・) {
-               break;
-           }
-       }
-       ```
-
-        - breakが使えないようなネストが何段階もあるループの場合
-            - コードを新しいメソッドに移動する
-                - ループ内部のコード
-                - ループ全体
-   - [ ]  変数のスコープを縮める
-   - [ ]  変数のことが見えるコード行数をできるだけ減らす
-       - 考えなければいけない変数の量を減らせるから
-
-      ```java
-      // bad
-      class LangeClass {
-          // インスタンス変数は2箇所で使用している
-          string str_;
-      
-          void Method1() {
-              str_ = ・・・;
-              Methodd2();
-          }
-      
-          void Method2() {
-              // str_を使っている
-          }
-      
-          // str_を使っていないメソッドがたくさんある
-      };
-      
-      // good
-      class LangeClass {
-          void Method1() {
-              // インスタンス変数をローカル変数に格下げした
-              // 格下げしたことで、インスタンス変数の値の状況を追跡する必要がない
-              string str_ = ・・・;
-              Methodd2();
-          }
-      
-          void Method2(string str) {
-              // str_を使っている
-          }
-      
-          // その他のメソッドがstrが見えない
-      };
-      ```
-
-   - [ ]  if文のscope
-
-      ```cpp
-      // bad
-      PaymentInfo* info = database.ReadPaymentInfo();
-      if (info) {
-          cout << "User paid: " << info ->amount() << end1;
-      }
-      
-      // good
-      // infoが必要なのはif文の中だけなので、条件式でinfoを定義している
-      if (PaymentInfo* info = database.ReadPaymentInfo()) {
-          cout << "User paid: " << info ->amount() << end1;
-      }
-      ```
-
-   - [ ]  グローバル変数をクロージャーで包む（Javascript）
-       - クロージャとは
-         関数とその関数が定義された状態をセットにした特殊なオブジェクト
-        ```javascript
-        // bad
-        submitted = false; // グローバル変数
-        
-        var submit_form = function (form_name) {
-        	if (submitted) {
-        			return; // 二重投稿禁止
-        	}
-        	...
-        	submitted = true;
-        };
-        
-        // good
-        var submit_form = (function () {
-        	submitted = false; // 以下の関数からしかアクセスできない
-        
-        	return function (form_name) {
-        		if (submitted) {
-        			return; // 二重投稿禁止
-        		}
-        		...
-        		submitted = true;
-        	};
-        }());
-        ```
-        
-    - [ ]  JavaScriptのグローバルスコープ
-        
-        ```javascript
-        // bad
-        <script>
-        	var f = function () {
-        		// 危険:'i'は'var'で宣言されていないので、グローバルスコープになる!!
-        		// どこからでも参照できてしまう。
-        		for (i = 0; i < 10; i += 1)...
-        	};
-        	
-        	f();
-        </script>
-        
-        // bad example
-        <script>
-        	alert(i); // 10が表示される
-        </script>
-        
-        // good
-        <script>
-        	var f = function () {
-        		// 危険:'i'は'var'で宣言されていない!
-        		for (var i = 0; i < 10; i += 1)...
-        	};
-        	
-        	f();
-        </script>
-        ```
+                ```jsx
+                // bad
+                submitted = false; // グローバル変数
+                
+                var submit_form = function (form_name) {
+                	if (submitted) {
+                			return; // 二重投稿禁止
+                	}
+                	...
+                	submitted = true;
+                };
+                
+                // good
+                var submit_form = (function () {
+                	submitted = false; // 以下の関数からしかアクセスできない
+                
+                	return function (form_name) {
+                		if (submitted) {
+                			return; // 二重投稿禁止
+                		}
+                		...
+                		submitted = true;
+                	};
+                }());
+                ```
+                
+            - [ ]  JavaScriptのグローバルスコープ
+                
+                ```jsx
+                // bad
+                <script>
+                	var f = function () {
+                		// 危険:'i'は'var'で宣言されていないので、グローバルスコープになる!!
+                		// どこからでも参照できてしまう。
+                		for (i = 0; i < 10; i += 1)...
+                	};
+                	
+                	f();
+                </script>
+                
+                // bad example
+                <script>
+                	alert(i); // 10が表示される
+                </script>
+                
+                // good
+                <script>
+                	var f = function () {
+                		// 危険:'i'は'var'で宣言されていない!
+                		for (var i = 0; i < 10; i += 1)...
+                	};
+                	
+                	f();
+                </script>
+                ```
+                
+            - [ ]  変数は変数の使う直前に定義する
+        - [ ]  変数に代入するのは初めの1度だけにする（または定数を使って、変更がないようにする）
+            - 変数が変わる場所が増えると、現在地の判断が大変
+                
+                ```jsx
+                // bad
+                var setFirstEmptyInput = function (new_value) {
+                	var found = false;
+                	var i = 1;
+                	var elem = document.getElementById('input' + 1);
+                	while (elem !== null) {
+                		if (elem.value === '') {
+                			found = true;
+                			break;
+                		}
+                		i++;
+                		elem = document.getElementById('input' + i);
+                	}
+                	if (found) elem.value = new.value;
+                	return elem;
+                };
+                
+                // good
+                // 中間変数のfoundを除去した
+                var setFirstEmptyInput = function (new_value) {
+                	var i = 1;
+                	var elem = document.getElementById('input' + 1);
+                	while (elem !== null) {
+                		if (elem.value === '') {
+                			elem.value = new.value;
+                			return elem;
+                		}
+                		i++;
+                		elem = document.getElementById('input' + i);
+                	}
+                	return null;
+                };
+                
+                // more_good
+                // 変数elemはiに合わせて繰り返し処理（イテレート）していた
+                // そのためfor文に変えてみる → これで変数iの定義が1行で書けるようになった
+                var setFirstEmptyInput = function (new_value) {
+                	for (var i = 1; true; i++) {
+                		var elem = document.getElementById('input' + i);
+                		if (elem === null)
+                			return null;
+                		
+                		if (elem.value === '')
+                			elem.value = new.value;
+                			return elem;
+                		}
+                	}
+                };			
+                ```
+              
