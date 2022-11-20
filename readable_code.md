@@ -659,3 +659,116 @@
             - コードを新しいメソッドに移動する
                 - ループ内部のコード
                 - ループ全体
+   - [ ]  変数のスコープを縮める
+   - [ ]  変数のことが見えるコード行数をできるだけ減らす
+       - 考えなければいけない変数の量を減らせるから
+
+      ```java
+      // bad
+      class LangeClass {
+          // インスタンス変数は2箇所で使用している
+          string str_;
+      
+          void Method1() {
+              str_ = ・・・;
+              Methodd2();
+          }
+      
+          void Method2() {
+              // str_を使っている
+          }
+      
+          // str_を使っていないメソッドがたくさんある
+      };
+      
+      // good
+      class LangeClass {
+          void Method1() {
+              // インスタンス変数をローカル変数に格下げした
+              // 格下げしたことで、インスタンス変数の値の状況を追跡する必要がない
+              string str_ = ・・・;
+              Methodd2();
+          }
+      
+          void Method2(string str) {
+              // str_を使っている
+          }
+      
+          // その他のメソッドがstrが見えない
+      };
+      ```
+
+   - [ ]  if文のscope
+
+      ```cpp
+      // bad
+      PaymentInfo* info = database.ReadPaymentInfo();
+      if (info) {
+          cout << "User paid: " << info ->amount() << end1;
+      }
+      
+      // good
+      // infoが必要なのはif文の中だけなので、条件式でinfoを定義している
+      if (PaymentInfo* info = database.ReadPaymentInfo()) {
+          cout << "User paid: " << info ->amount() << end1;
+      }
+      ```
+
+   - [ ]  グローバル変数をクロージャーで包む（Javascript）
+       - クロージャとは
+         関数とその関数が定義された状態をセットにした特殊なオブジェクト
+        ```javascript
+        // bad
+        submitted = false; // グローバル変数
+        
+        var submit_form = function (form_name) {
+        	if (submitted) {
+        			return; // 二重投稿禁止
+        	}
+        	...
+        	submitted = true;
+        };
+        
+        // good
+        var submit_form = (function () {
+        	submitted = false; // 以下の関数からしかアクセスできない
+        
+        	return function (form_name) {
+        		if (submitted) {
+        			return; // 二重投稿禁止
+        		}
+        		...
+        		submitted = true;
+        	};
+        }());
+        ```
+        
+    - [ ]  JavaScriptのグローバルスコープ
+        
+        ```javascript
+        // bad
+        <script>
+        	var f = function () {
+        		// 危険:'i'は'var'で宣言されていないので、グローバルスコープになる!!
+        		// どこからでも参照できてしまう。
+        		for (i = 0; i < 10; i += 1)...
+        	};
+        	
+        	f();
+        </script>
+        
+        // bad example
+        <script>
+        	alert(i); // 10が表示される
+        </script>
+        
+        // good
+        <script>
+        	var f = function () {
+        		// 危険:'i'は'var'で宣言されていない!
+        		for (var i = 0; i < 10; i += 1)...
+        	};
+        	
+        	f();
+        </script>
+        ```
