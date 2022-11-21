@@ -1001,20 +1001,238 @@
        business.date_created = datetime.datetime.utcnow()
        bussiness.save_to_database()
        ```
+  - [ ]  必要応じてインターフェイスを整える
+  
+     ```python
+     # bad
+     user_info = { "username": "...", "passeord": "..." }
+     user_str = json.dumps(user_info)
+     cipher = Cipher("aes_128_cbc", key=PRIVATE_KEY, init_vector=INIT_VECTOR, op=ENCODE)
+     encrypted_bytes = cipher.update(user_str)
+     encrypted_bytes += cipher.final() # 現在の128ビットブロックをフラッシュする
+     url = "http://example.com/?user_info=" + base64.urlsafe_b64encode(encrypted_bytes)
+     
+     # good
+     # objをurlセーフな文字列に変換する処理をメソッド化した
+     def url_safe_encrypt(obj);
+         obj_str = json.dump(obj)
+         cipher = Cipher("aes_128_cbc", key=PRIVATE_KEY, init_vector=INIT_VECTOR, op=ENCODE)
+         encrypted_bytes = cipher.update(obj_str)
+         encrypted_bytes += cipher.final() # 現在の128ビットブロックをフラッシュする
+         return base64.urlsafe_b64encode(encrypted_bytes)
+     
+     user_info = { "username": "...", "passeord": "..." }
+     url = "http://example.com/?user_info=" + url_safe_encrypt(user_info)
+     ```
 
-    - [ ]  既存のインターフェイスを簡潔にする
+  - [ ]  メソッドの分割しすぎには注意
+  
+     ```python
+     # bad
+     # 小さい関数を作りすぎると読みにくくなる（あちこちに飛び回るため）
+     # 他の部分で再利用する必要があった場合に、小さい関数を追加する。
+     
+     user_info = { "username": "...", "passeord": "..." }
+     url = "http://example.com/?user_info=" + url_safe_encrypt(user_info)
+     
+     def url_safe_encrypt_obj(obj):
+         obj_str = json.dump(obj)
+         return url_safe_encrypt_str(obj_str)
+     
+     def url_safe_encrypt_str(data):
+         encrypted_bytes = encrypt(data)
+         return base64.urlsafe_b64encode(encrypted_bytes)
+     
+     def encrypt(data):
+         cipher = make_cipher()
+         encrypted_bytes = cipher.update(data)
+         encrypted_bytes += cipher.final()
+         return encrypted_bytes
+     
+     def make_cipher():
+         return Cipher("aes_128_cbc", key=PRIVATE_KEY, init_vector=INIT_VECTOR, op=ENCODE)
+     
+     ```
 
-       ```jsx
-       // bad
-       // max_resultsという名前のクッキーを読み込むコード
-       var max_results;
-       var cokkises = document.cookie.split(';');
-       for (var i = 0; i < cookies.length; i++) {
-           var c = cookies[i];
-           c = c.replace(/^[ ]+/, '')
-           if (c.indexOf("max_results=") === 0)
-               max_results = Number(c.substring(12, c.length));
-       }
-       
-       var max_results = Number(get_cookie("max_results"));
-       ```
+- 複数のタスクを行っているコードはないか
+  - [ ]  タスクは小さくできないか
+     ```jsx
+     // bad
+     var vote_changed = function (old_vote, new_vote)
+     	var score = get_score();
+     	
+     	if (new_vote !== old_vote) {
+     		if (new_vote === 'Up') {
+     			score += (old_vote === 'Done' ? 2 : 1);
+     		} else if (new_vote === 'Down') {
+     			score += (old_vote === 'Up' ? 2 : 1);
+     		} else if (new_vote === '') {
+     			score += (old_vote === 'Up' ? -1 : 1);
+     		}
+     	}
+     
+     	set_score(score);
+     };
+     
+     // good
+     // 投票を数値にパースする処理を別メソッドにする
+     // これでコードが楽に理解できるようになった
+     var vote_value = function (vote) {
+     	if (vote === 'Up') {
+     		return +1;
+     	}
+     	if (vote === 'Down') {
+     		return -1;
+     	}
+     	return 0;
+     };
+     
+     var vote_changed = function (old_vote, new_vote) {
+     	var score = get_score();
+     	score -= vote_value(old_vote); // 古い値を削除する
+     	score += vote_value(new_vote); // 新しい値を削除する
+     
+     	set_score(score);
+     };
+     ```
+     
+     ```jsx
+     // bad
+     // 1度に複数のタスクを行っている
+     
+     // location_infoディクショナリから値を抽出する
+     var place = location_info["LocalityName"]; // "Santa Monica"
+     
+     // 都市の優先順位を調べる
+     // 何も見つからない場合はデフォルトで"Midle-of-Nowhere"にする
+     if (!place) {
+     	place = location_info["SubAdministrativeAreaName"]; // "Los Angeles"
+     }
+     if (!place) {
+     	place = location_info["AdministrativeAreaName"]; // "California"
+     }
+     if (!place) {
+     	place = "Midle-of-Nowhere"
+     } 
+     
+     // 国を取得する
+     // なければ"Planet Earth"にする
+     if (location_info["CountryName"]) {
+     	place += "," + location_info["CountryName"]; // "USA"
+     } else {
+     	place += ",Planet Earth";
+     }
+     
+     // placeを更新する
+     return place;
+     
+     // good
+     // 「1度に1つのタスク」を適用する
+     
+     // この後はlocation_infoを使用する必要がなくなったので、長いキーを覚える必要がなくなった
+     var town = location_info["LocalityName"];
+     var city = location_info["SubAdministrativeAreaName"];
+     var state = location_info["AdministrativeAreaName"];
+     var country = location_info["CountryName"];
+     
+     // 先にデフォルト値を設定して値が見つかったら書き換える
+     var second_half = "Planet Earth";
+     if (country) {
+     	second_half = country;
+     }
+     if (state && country === "USA") {
+     	second_half = state;
+     }
+     
+     var first_half = "Midlle-ofNowhere"
+     if (state && country !== "USA") {
+     	first_half = state;
+     }
+     if (city) {
+     	first_half = city;
+     }
+     if (town) {
+     	first_half = town;
+     }
+     
+     return first_half + ',' + second_half;
+     ```
+
+     ```java
+     // bad
+     void UpdateCounts(HttpDownload hd) {
+     	// 可能であれば"Exit State"を見つける
+     	if (!hd.has_event_log() || !hd.event_log().has_exit_state()) {
+     		counts["Exit State"]["unknown"]++;
+     	} else {
+     		string state_str = ExitStateTypeName(hd.event_log().exit_state());
+     		counts["Exit State"][state_str]++;
+     	}
+     
+     	// HTTPヘッダーがなければ、残りの要素に"unknow"を設定する
+     	if (!hd.has_http_headers()) {
+     		counts["Http Response"]["unknow"]++;
+     		counts["Content-Type"]["unknow"]++;
+     		return;
+     	}
+     
+     	HttpHeaders headers = hd.http_headers();
+     
+     	// HTTPレスポンスをログに記録する。なければ"unknow"と記録する。
+     	if (!headers.has_response_code()) {
+     		counts["Http Response"]["unknow"]++;
+     	} else {
+     		string code = StringPrintf("%d", headers.response_code());
+     		counts["Http Response"][code]++;
+     	}
+     	
+     	// "Content-Type"をログに記録する。なければ"unknow"と記録する。
+     	if (!headers.has_content_type()) {
+     		counts["Content-Type"]["unknow"]++;
+     	} else {
+     		string content_type = ContentTypeMime(headers.content_type());
+     		counts["Content-Type"][content_type]++;
+     	}
+     }
+     
+     // good
+     void UpdateCounts(HttpDownload hd) {
+     	// タスク：抽出したい値をデフォルト値に設定する
+     	string exit_state = "unknow";
+     	string http_response = "unknow";
+     	string content_type = "unknow";
+     
+     	// タスク：HttpDownloadから値を1つずつ抽出する
+     	if (hd.has_event_log() && hd.event_log().has_exit_state()) {
+     		exit_state = ExitStateTypeName(hd.event_log().exit_state());
+     	}
+     	if (hd.has_http_headers() && hd.http_headers().has_response_code()) {
+     		http_response = StringPrintf("%d", headers.response_code());
+     	}
+     	if (hd.has_http_headers() && hd.http_headers().has_content_type()) {
+     		content_type = ContentTypeMime(hd.http_headers().content_type());
+     	}
+     
+     	// タスク:counts[]を更新する
+     	counts["Exit State"][exit_state]++;
+     	counts["Exit State"][http_response]++;
+     	counts["Exit State"][content_type]++;
+     }
+     
+     // more good
+     // 変数（exit_state等）を削除できる
+     void UpdateCounts(HttpDownload hd) {
+     	counts["Exit State"][ExitState(hd)]++;
+     	counts["Exit State"][HttpResponse(hd)]++;
+     	counts["Exit State"][ContentType(hd)]++;
+     }
+     
+     string ExitState(HttpDownload hd) {
+     	if (hd.has_event_log() && hd.event_log().has_exit_state()) {
+     		return ExitStateTypeName(hd.event_log().exit_state());
+     	} else {
+     		return "unknow";
+     	}
+     }
+     ```
+     
