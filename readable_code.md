@@ -1235,4 +1235,142 @@
      	}
      }
      ```
-     
+
+- コードに思いを込める
+    - コードをより簡単にする手順
+      1. コードの動作を簡単な言葉を使って同僚に説明する
+      2. 説明の中で使っているキーワードやフレーズに注目する
+      3. 説明に合わせてコードを書く
+    - [ ] コードを声に出して説明する
+        ```php
+           // before
+           $is_admin = is_admin_request();
+           if ($document) {
+           if (!is_admin && ($document['username'] != $_SESSION['username'])) {
+           return not_authorized();
+           }
+           } else {
+           if (!$is_admin) {
+           return not_authorized();
+           }
+           }
+           
+           // 【このロジックの説明】
+           // 権限があるのは以下2つ
+           // ・管理者
+           // ・文書の所有者（文書がある場合）
+           // その他は権限なし
+           
+           // after（ロジックの説明を踏まえて）
+           // ロジックが単純になった（否定形（!）がなくなった）
+           if (is_admin_request()) {
+           //権限あり
+           } elseif ($document['username'] != $_SESSION['username'])) {
+           //権限あり
+           } else {
+           return not_authorized();
+           }
+        ```
+        ```python
+        # 初めのコード
+        def PrintStockTransactions():
+        	stock_iter = db_read("SELECT time, ticker_symbol FROM ...")
+        	price_iter = ...
+        	num_shares_iter = ...
+        	
+        	# 3つのテーブルの行を1度にイテレートする
+        	while stock_iter and price_iter and num_shares_iter:
+        		stock_time = stock_iter.time
+        		price_time = price_iter.time
+        		num_shares_time = num_shares_iter.time
+        		
+        		# 3つの行に同じtimeが含まれていない場合、最も過去の行をスキップする
+        		# 注意：最も過去の行が2つ一致していることもあるので、<=は<にできない
+        		if stock_time != price_time or stock_time != num_shares_time:
+        			if stock_time <= price_time and stock_time <= num_shares_time:
+        				stock_iter.NextRow()
+        			elif price_time <= stock_time and price_time <= num_shares_time:
+        				price_iter.NextRow()
+        			elif num_shares_time <= stock_time and num_shares_time >= price_time:
+        				num_shares_iter.NextRow()
+        			else
+        				assert False # 不可能
+        			continue
+        
+        		assert stock_time == price_time == num_shares_time
+        
+        		# 一致した行を印字する
+        		print "@", stock_time,
+        		print stock_iter.ticker_symbol,
+        		print price_iter.price,
+        		print num_shares_iter.number_of_shares
+        
+        		stock_iter.NextRow()
+        		price_iter.NextRow()
+        		num_shares_iter.NextRow()
+        
+        # リファクタリング（1回目）
+        def PrintStockTransactions():
+        	stock_iter = db_read("SELECT time, ticker_symbol FROM ...")
+        	price_iter = ...
+        	num_shares_iter = ...
+        	
+        	while true
+        		# 一番汚い処理を別メソッドにする
+        		time = AdvanceToMatchingTime(stock_iter, price_iter, num_shares_iter)		
+        		if time is None:
+        			return
+        
+        		# 一致した行を印字する
+        		print "@", stock_time,
+        		print stock_iter.ticker_symbol,
+        		print price_iter.price,
+        		print num_shares_iter.number_of_shares
+        
+        		stock_iter.NextRow()
+        		price_iter.NextRow()
+        		num_shares_iter.NextRow()
+        
+        # 一番汚い処理をそのまま移管したので汚い
+        def AdvanceToMatchingTime(stock_iter, price_iter, num_shares_iter)		
+        	# 3つのテーブルの行を1度にイテレートする
+        	while stock_iter and price_iter and num_shares_iter:
+        		stock_time = stock_iter.time
+        		price_time = price_iter.time
+        		num_shares_time = num_shares_iter.time
+        		
+        		# 3つの行に同じtimeが含まれていない場合、最も過去の行をスキップする
+        		if stock_time != price_time or stock_time != num_shares_time:
+        			if stock_time <= price_time and stock_time <= num_shares_time:
+        				stock_iter.NextRow()
+        			elif price_time <= stock_time and price_time <= num_shares_time:
+        				price_iter.NextRow()
+        			elif num_shares_time <= stock_time and num_shares_time >= price_time:
+        				num_shares_iter.NextRow()
+        			else
+        				assert False # 不可能
+        			continue
+        
+        		assert stock_time == price_time == num_shares_time
+        		return stock_time
+        
+        # リファクタリング（2回目）
+        def AdvanceToMatchingTime(row_iter1, row_iter2, row_iter3):
+        	while row_iter1 and row_iter2 and row_iter3:
+        		t1 = row_iter1.time
+        		t2 = row_iter2.time
+        		t3 = row_iter3.time		
+        	
+        		if t1 == t2 == t3:
+        			return t1
+        	
+        		tmax = max(t1,t2,t3)
+        	
+        		# いずれかの行が遅れているのであれば、その行をすすめる
+        		# 最終的にすべての行が一致するまでループを繰り返す
+        		if t1 < tmax: row_iter1.NextRow()
+        		if t2 < tmax: row_iter2.NextRow()
+        		if t3 < tmax: row_iter3.NextRow()
+        
+        	return None # 一致する行が見つからない
+        ```
