@@ -1379,3 +1379,136 @@
     - [ ]  不必要な機能は削除する。過剰な機能は不要。
     - [ ]  最も簡単に問題を解決できる要求（対応）を考える。
     - [ ]  定期的に全てのAPIを読んで、標準ライブラリを使えるようにする。
+
+- テストを読みやすくて保守しやすいものにする
+    
+    ```cpp
+    // docsをスコアでソートする（降順）。マイナスのスコアは削除する。
+    void SortAndFilterDocs(vector<ScoredDocument>* docs);
+    
+    // first
+    void Test1() {
+    	vector<ScoredDocument> docs;
+    	docs.resize(5);
+    	docs[0].url = "http://example.com";
+    	docs[0].score = -5.0;
+    	docs[1].url = "http://example.com";
+    	docs[1].score = 1;
+    	docs[2].url = "http://example.com";
+    	docs[2].score = 4;
+    	docs[3].url = "http://example.com";
+    	docs[3].score = -99998.7;
+    	docs[4].url = "http://example.com";
+    	docs[4].score = 3.0;
+    
+    	SortAndFilterDocs(&docs);
+    
+    	assert(docs.size() == 3);
+    	assert(docs[1].score() == 4);
+    	assert(docs[2].score() == 3.0);
+    	assert(docs[3].score() == 1);
+    }
+    ```
+    
+    - 大切ではない詳細はユーザーから隠す。大切な詳細は目立つようにする。
+        - `.score`、`.url`をヘルパーメソッドに出す
+            
+            ```cpp
+            // second
+            void MakeScoredDoc(ScoredDocument* sd, double score, string url) {
+            	sd->score = score;
+            	sd->url = url;
+            }
+            	
+            void Test1() {
+            	vector<ScoredDocument> docs;
+            	docs.resize(5);
+            	MakeScoredDoc(&docs[0], -5.0, "http://example.com");
+            	MakeScoredDoc(&docs[1], 1, "http://example.com");
+            	MakeScoredDoc(&docs[2], 4, "http://example.com");
+            	MakeScoredDoc(&docs[3], -99998.7, "http://example.com");
+            	...
+            }
+            ```
+            
+        - `&docs`をヘルパーメソッドに出す
+            
+            ```cpp
+            // third
+            void AddScoredDoc(vector<ScoredDocument>& docs, double score) {
+            	ScoredDocument sd;
+            	sd.score = score;
+            	sd.url = "http://example.com";
+            	docs.push_back(sd);
+            }
+            	
+            void Test1() {
+            	vector<ScoredDocument> docs;
+            	AddScoredDoc(docs, -5.0);
+            	AddScoredDoc(docs, 1);
+            	AddScoredDoc(docs, 4);
+            	AddScoredDoc(docs, -99998.7);
+            	...
+            }
+            ```
+            
+        - 最小のテストを作る
+            - テストコードが何を使用しているか簡単な言葉で説明する。
+            - テストコードは、「こういう状況と入力から、こういう振る舞いと出力を期待する」のレベルまで要約できる。
+        - 独自のミニ言語を実装する
+            
+            ```cpp
+            // forth
+            // CheckScoresBeforeAfterを呼び出すだけで、テストが書けるようになった。
+            void CheckScoresBeforeAfter(string input, string expected_output) {
+            	vector<ScoredDocument> docs = ScoreDocsFromString(input);
+            	SortAndFilterDocs(&docs);
+            	string output = ScoredDocsToString(docs);
+            	assert(output == expected_output);
+            }
+            ```
+            
+    - エラーメッセージを読みやすくする
+        - 読みやすいエラーメッセージを出力できるように
+            - より良いassertを使う
+            - 自作する
+        - 読みやすいエラーメッセージ一例
+            
+            ```cpp
+            // error message
+            
+            // bad
+            Assertion failed: (output == expected_output),
+            	function CheckScoresBeforeAfter, file test.cc, line 37.
+            
+            // good
+            // 	outputとexpected_outputの値が見えることで、デバッグしやすくなる
+            test.cc(37):fatal error in "CheckScoresBeforeAfter": critical check
+            	output == expected_output failed "1,3,4" != "4,3,1"
+            
+            ```
+            
+    - テストの適切な入力値を選択する
+        - コードを完全にテストする最も単純な入力値の組み合わせを選択する
+            - 入力値を単純化する
+                
+                ```cpp
+                // bad
+                CheckScoresBeforeAfter("-5, 1, 4, -99998.7, 3", "4, 3, 1")
+                
+                //good
+                //任意のマイナス値を表していた「-99998.7」を「-1」に単純化する
+                CheckScoresBeforeAfter("-5, 1, 4, -1, 3", "4, 3, 1")
+                ```
+                
+            - 1つの機能に複数のテスト
+                - 完璧な入力値を一つ作るのではなく、小さなテストを複数作るほうが、
+                    - 簡単
+                    - 効果的
+                    - 読みやすい
+                    
+                    ```cpp
+                    // good
+                    CheckScoresBeforeAfter("2, 1, 3", "3, 2, 1") // ソート
+                    CheckScoresBeforeAfter("0, -0.1, -10", "0")  // マイナスは削除
+                    ```
