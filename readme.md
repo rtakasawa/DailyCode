@@ -1,7 +1,7 @@
 # Tips
 
 ## Category
-### [良いコードを書くためのチェックリスト](https://github.com/rtakasawa/DailyCode/blob/master/readable_code_check_list.md)
+### [良いコードを書くためのチェックリスト](https://github.com/rtakasawa/DailyCode/blob/master/code_style_check_sheet.md)
 
 ### [リーダブルコード（まとめ）](https://github.com/rtakasawa/DailyCode/blob/master/readable_code.md)
 
