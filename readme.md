@@ -1,9 +1,9 @@
 # Tips
 
 ## Category
-### リーダブルコード
-- [チェックリスト](https://github.com/rtakasawa/DailyCode/blob/master/readable_code_check_list.md)
-- [詳細](https://github.com/rtakasawa/DailyCode/blob/master/readable_code.md)
+### [良いコードを書くためのチェックリスト](https://github.com/rtakasawa/DailyCode/blob/master/readable_code_check_list.md)
+
+### [リーダブルコード（まとめ）](https://github.com/rtakasawa/DailyCode/blob/master/readable_code.md)
 
 ### code design
 - クラスで分岐するケース文のリファクタリング
