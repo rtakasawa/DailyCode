@@ -2,7 +2,9 @@
 
 ## Category
 ### リーダブルコード
-- [チェックリスト](https://github.com/rtakasawa/DailyCode/blob/master/readable_code.md)
+- [チェックリスト](https://github.com/rtakasawa/DailyCode/blob/master/readable_code_check_list.md)
+- [詳細](https://github.com/rtakasawa/DailyCode/blob/master/readable_code.md)
+
 ### code design
 - クラスで分岐するケース文のリファクタリング
   - [code](https://github.com/rtakasawa/DailyCode/blob/master/code_design/case_statement_branch_by_class.rb)

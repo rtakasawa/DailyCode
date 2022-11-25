@@ -1,0 +1,612 @@
+## 名前
+
+- [ ]  明確な単語になっているか
+- [ ]  汎用的な名前ではないか
+- [ ]  名前に情報を追加できているか
+
+   ```ruby
+   # bad
+   time = Time.now
+   
+   # good
+   now_time = time = Time.now
+   ```
+
+- 名前の長さ
+    - [ ]  スコープが小さいときは短い名前でも良い
+    - [ ]  不要な単語は捨てる
+
+       ```ruby
+       Convert_to_string ⇛ to_string
+       ```
+
+- [ ]  他の意味と間違えられないか
+- [ ]  限界値を含めるときはmaxとminを使う
+
+   ```ruby
+   # 仕様：カートには10点までしか入らない
+   
+   # BAD
+   # 10未満？10以下？が分からない
+   CART_TO_BIG_LIMIT = 10
+   
+   # GOOD
+   MAX_ITEMS_IN_CART = 10
+   ```
+
+- [ ]  範囲を指定するときはfirstとlastを使う
+
+   ```ruby
+   # 仕様：1〜5の数字を出力する
+   
+   # bad
+   # stopは複数の5未満？5以上？
+   puts range(start:1, stop:5)
+   
+   # good
+   # 包含を表現する場合、lastが適切
+   puts range(first:1, last:5)
+   ```
+
+- [ ]  包含/排他的範囲にはbeginとendを使う
+- [ ]  ブール値の名前
+
+   ```ruby
+   # bad
+   # 数値を返す用に聞こえる
+   ded SpaceLeft
+       ***
+   end
+   
+   # good
+   # bool値の変数名は頭にhas,can,shouldをつけると分かりやすい
+   def had_space_left
+       ***
+   end
+   ```
+
+   ```ruby
+   # bad
+   # 名前の否定形は読みづらい
+   disable_ssl = false
+   
+   # good
+   use_ssl = true
+   ```
+
+- [ ]  誤解されない名前を使っていないか
+    - 以下の名前は軽量な処理が期待される
+        - get
+        - size
+
+## スタイル
+
+- [ ]  改行位置は揃っているか
+- [ ]  共通部分はメソッド化する
+- [ ]  縦の線を真っ直ぐにする
+- [ ]  一貫性と意味のある並びにする
+
+   ```ruby
+   # bad
+   details  = request.POST.get('details')
+   location = request.POST.get('location')
+   url      = request.POST.get('url')
+   
+   ## 順番が変わっていて分かりづらい
+   return ** if rec.location == location
+   return ** if rec.url      == url
+   return ** if rec.details  == details
+   
+   # good
+   details  = request.POST.get('details')
+   location = request.POST.get('location')
+   url      = request.POST.get('url')
+   
+   return ** if rec.details  == details
+   return ** if rec.location == location
+   return ** if rec.url      == url
+   ```
+
+- [ ]  空行、コメントを使って、論理的な「段落」に分ける
+
+   ```ruby
+   # bad
+   def create_document(json)
+       values = fetch_values(json)
+       sub_values = fetch_sub_values(json)
+       processed_values = processing_values(values)
+       processed_sub_values = processing_values(sub_values)
+       output_values(values, sub_values)
+   end
+   
+   # good
+   def create_document(json)
+       # json内から該当の値を取得
+       values = fetch_values(json)
+       sub_values = fetch_sub_values(json)
+       
+       # 値を加工
+       processed_values = processing_values(values)
+       processed_sub_values = processing_values(sub_values)
+   
+       # 値を出力
+       output_values(values, sub_values)
+   end
+   ```
+
+- [ ]  一貫性のあるスタイルにする
+    - プロジェクトの規約に従う
+
+   ```ruby
+   # example1
+   hash = {
+   }
+   
+   # example2
+   hash = 
+   {
+   }
+   ```
+
+
+## コメント
+
+- [ ]  コメントの品質を上げる方法
+    1. 頭の中にあるコメントをそのまま書く
+    2. 1を読んで、改善が必要な箇所を見つける
+    3. 改善する
+- [ ]  自分の考えを記録する
+
+   ```ruby
+   # このクラスは汚くなってきている
+   # サブクラスを作って整理した方が良いかもしれない
+   ```
+
+   ```ruby
+   # この場合〇〇が漏れるケースがある。しかし、100%の対応は難しい。
+   ```
+
+- [ ]  アノテーションを使う
+
+   ```ruby
+   TODO:  # 後で手を付ける
+   FIXME: # 既知の不具合あり
+   HACK:  # あまりきれいじゃない解決策
+   XXX:   # 危険!　大きな問題あり 
+   ```
+
+- [ ]  定数にコメントを付ける
+    - なぜその値を持っているのかという「背景」をコメントにする
+
+   ```ruby
+   # 合理的な限界値。人間はこんなに読めない。
+   MAX_RSS_SUBSCRIPTIONS = 1000
+   ```
+
+- [ ]  ハマりそうな罠を告知する
+
+   ```java
+   // good
+   // 以下のコメントがないと、処理の中でSendEmailを呼び出して、タイム・アウトした場合に、処理全体が異常終了する可能性がある
+   
+   // メールを送信する外部サービスを呼び出している（1分でタイムアウト）
+   void SendEmail(string to, string subject, string body);
+   ```
+
+- [ ]  classやfileに全体像のコメントをする
+
+   ```ruby
+   # このmoduleはfile出力に関する便利なヘルパーメソッドを定義してます。
+   module OutputFile
+   end
+   ```
+
+- [ ]  曖昧な代名詞を使わない（「その」等）
+- [ ]  メソッドの動作を正確にコメントする
+
+   ```ruby
+   # bad
+   # このファイルに含まれる行数を返す。
+   def count_lines(file)
+   end
+   
+   # good
+   # このファイルに含まれる改行文字（\ｎ）の数を返す。
+   def count_lines(file)
+   end
+   ```
+
+- [ ]  実例を使う
+
+   ```ruby
+   # bad
+   # srcの先頭や末尾にあるcharsを除去する。
+   def strip(src, chars)
+   end
+   
+   # good
+   # srcの先頭や末尾にあるcharsを除去する。
+   # 例：strip('ab', 'a')の場合、aを返す
+   def strip(src, chars)
+   end
+   ```
+
+- [ ]  情報密度の高いコメントを使う
+
+   ```ruby
+   # before
+   # 所在地から余分な空白を除去。さらに「Avenue」を「Ave」にする等の整形をする。
+   
+   # after
+   # 所在地を正規化する（例：「Avenue」を「Ave」にする）
+   ```
+
+
+## 制御フローを読みやすくする
+
+- [ ]  条件式の引数の並び順
+
+   ```ruby
+   # 左側：調査対象の式（変化する）
+   # 右側：比較対象の式（あまり変化しない）
+   
+   # bad
+   if 10<= length
+   
+   # good
+   if length >= 10
+   ```
+
+- [ ]  if/elseブロックの並び順
+    - 条件は肯定形を使う
+
+        ```ruby
+        # bad
+        if a != b
+        else
+        end
+        
+        # good
+        if a == b
+        else
+        end
+        ```
+
+    - 単純な条件を先に書く
+    - 関心を引く条件、目立つ条件を先に書く
+
+        ```ruby
+        if not_file
+        	# Errorログを記録す
+        else
+        end
+        ```
+
+- [ ]  三項演算子
+    - 基本的にはif/elseを使う
+
+        ```ruby
+        #bad
+        exponent >= 0 ? mantissa * (1 << exponent) : mantissa / (1 << - exponent)
+        
+        #good
+        if exponent >= 0
+        	mantissa * (1 << exponent)
+        else
+        	mantissa / (1 << exponent)
+        end
+        ```
+
+    - 簡潔になるときだけ、三項演算子を使う
+
+        ```ruby
+        #bad
+        if hour >= 12
+        	time_str += "pm"
+        else
+        	time_str += "am"
+        end
+        
+        #good
+        time_str += hour >= 12 ? "pm" : "am"
+        ```
+
+- [ ]  関数から早く返す
+
+   ```ruby
+   # ガード節を使う
+   return '' if hour.blank?
+   ```
+
+- [ ]  ネストを浅くする
+    - 早めに返してネストを削除する
+
+        ```ruby
+        if user_result != SUCCESS
+        	reply.WriteErrors(user_result)
+        	reply
+        	return
+        end
+        
+        if permission_result != SUCCESS
+        	reply.WriteErrors('error reading permissions')
+        	reply
+          return
+        end
+        
+        reply.WriteErrors('')
+        reply
+        ```
+
+    - `next`を使ってループ内のネストを削除する
+
+        ```java
+        // bad
+        for (int i = 0; i < results.size(); i++) {
+        	if (results[i] != NULL) {
+        		non_null_count++;
+        
+        		if (results[i]->name != "") {
+        				coun << "Considering candidate ...." << end1;
+        		}
+        	}
+        }
+        
+        // good
+        // if・・・continueを使って処理をskipする
+        // rubyだとnext if文となる
+        for (int i = 0; i < results.size(); i++) {
+        	if (results[i] == NULL) continue;
+        	non_null_count++;
+        
+        	if (results[i]->name == "") continue;
+        	coun << "Considering candidate ...." << end1;
+        }
+        ```
+
+
+## 式を分割する
+
+- [ ]  説明変数を使う
+
+   ```ruby
+   # bad
+   if line.split(':')[0].strip == "root"
+   
+   # good
+   # 比較対象が分かりやすくなった
+   user_name = line.split(':')[0].strip
+   if user_name == "root"
+   ```
+
+- [ ]  要約変数を使う
+
+   ```ruby
+   # bad
+   if request.user.id == document.owner.id
+   end
+   
+   if request.user.id != document.owner.id
+   end
+   
+   # good
+   # 変数を個別に読む必要がなくなった
+   user_owns_document = request.user.id == document.owner_id
+   
+   if user_owns_document
+   end
+   
+   if !user_owns_document
+   end
+   ```
+
+- [ ]  ド・モルガンの法則を使う
+
+   ```markdown
+   - notを分配してand/orを反転する
+   not (a or b or c) ⇔　(not a) and (not b) and (not c)
+   not (a and b and c) ⇔　(not a) and (not b) and (not c)
+   ```
+
+   ```ruby
+   # bad
+   if (!(file_exists && !is_protected))
+   end
+   
+   # good
+   if (!file_exists || is_protected)
+   end
+   ```
+
+- [ ]  読みづらい短絡評価を使用していないか
+
+   ```java
+   // bad
+   assert((!(bucket = FindBucket(key))) || !bucket->IsOccupied());
+   
+   // good
+   // 2行になったけど読みやすくなった!
+   bucket = FindBucket(key);
+   if (bucket != NULL) assert(!bucket->IsOccupied());
+   ```
+
+- [ ]  ロジックを反対にすることで簡単に解決できる場合もある
+
+   ```java
+   //仕様：beginまたはendがotherの中にあるか確認する
+   
+   // bad
+   (begin >= other.begin && begin < other.end) ||
+   (end > other.begin && end <= other.end) ||
+   (begin <= other.begin && end >= other.end);
+   
+   //good
+   if (other.end <= begin) return false; // 一方の終点が、この終点より前にある
+   if (other.begin >= end) return false; // 一方の始点が、この終点より後にある
+   ```
+
+
+## 変数
+
+- [ ]  変数に代入するのは初めの1度だけにする（なるべく）
+    - または定数を使って、変更がないようにする
+    - 変数が変わる場所が増えると、現在値の判断が大変
+- [ ]  変数のスコープはできるだけ小さくする
+- [ ]  邪魔な変数は削除する
+    - 邪魔な変数
+        - 一時変数
+
+            ```java
+            # bad
+            # now:複雑な式を分解していない
+            # now:datetime.datetime.now()のままでも意味が通じる
+            # now:1度しか使っていないので、重複削除になっていない
+            now = datetime.datetime.now()
+            root_message.last_view_time = now
+            
+            # good
+            root_message.last_view_time = datetime.datetime.now()
+            ```
+
+        - 中間結果の変数
+
+            ```jsx
+            # bad
+            # index_to_remove:中間結果を保持するためだけに使っているので、削除できる。
+            var remove_one = function (array, value_to_remove) {
+            	var index_to_remove = null;
+            	for (var i = 0; i < arrary.length; i += 1) {
+            		if (array[i] === value_to_remove) {
+            			index_to_remove = i;
+            			break;
+            		}
+            	}
+            	if (index_to_remove != null) {
+            		array.splice(index_to_remove, 1);
+            	}
+            };
+            
+            # good
+            var remove_one = function (array, value_to_remove) {
+            	for (var i = 0; i < array.length; i += 1) {
+            		if(array[i] === value_to_remove) {
+            			array.splice(i, 1);
+            			return;
+            		}
+            	}
+            };
+            ```
+
+        - 制御フロー変数
+
+            ```java
+            # bad
+            # doneはプログラミングを制御するための変数
+            # 実際のプログラミングに関係のあるデータは保持していない
+            # 制御フロー変数という
+            boolean done = false;
+            while (/* 条件 */ && !done) {
+            	・・・
+            	if(・・・) {
+            			done = true;
+            			continue;
+            	}
+            }
+            
+            # good
+            # 制御フロー変数は削除できる
+            boolean done = false;
+            while (/* 条件 */) {
+            	・・・
+            	if(・・・) {
+            		break;
+            	}
+            }
+            ```
+
+
+## メソッド・コードブロック
+
+- [ ]  無関係の下位問題を抽出して、別のメソッドに処理を移動する
+    1. メソッドやコードブロックを見て、「このコードの高レベル目標は何か？」を自問する。
+    2. コードの各行にたいして、「高レベル目標に直接効果があるのか？あるいは、無関係の下位問題を解決しているのか？」と自問する。
+    3. 無関係の下位問題を解決しているコードが相当量あれば、それらを抽出して別の関数にする。
+- [ ]  1度に複数のタスクを行っていないか
+
+  「1度に1つのタスク」となるように関数を使って処理を分割する
+
+- [ ]  コードをより簡単にする手順
+    1. コードの動作を簡単な言葉を使って同僚に説明する
+
+       （コードを声に出して説明する）
+
+    2. 説明の中で使っているキーワードやフレーズに注目する
+    3. 説明に合わせてコードを書く
+
+   ```php
+   // before
+   $is_admin = is_admin_request();
+   if ($document) {
+       if (!is_admin && ($document['username'] != $_SESSION['username'])) {
+           return not_authorized();
+       }
+   } else {
+           if (!$is_admin) {
+               return not_authorized();
+       }
+   }
+   
+   // 【このロジックの説明】
+   // 権限があるのは以下2つ
+   // ・管理者
+   // ・文書の所有者（文書がある場合）
+   // その他は権限なし
+   
+   // after（ロジックの説明を踏まえて）
+   // ロジックが単純になった（否定形（!）がなくなった）
+   if (is_admin_request()) {
+       //権限あり
+   } elseif ($document['username'] != $_SESSION['username'])) {
+       //権限あり
+   } else {
+       return not_authorized();
+   }
+   ```
+
+- [ ]  メソッドの分割しすぎには注意
+
+   ```python
+   # bad
+   # 小さい関数を作りすぎると読みにくくなる（あちこちに飛び回るため）
+   # 他の部分で再利用する必要があった場合に、小さい関数を追加する。
+   
+   user_info = { "username": "...", "passeord": "..." }
+   url = "http://example.com/?user_info=" + url_safe_encrypt(user_info)
+   
+   def url_safe_encrypt_obj(obj):
+       obj_str = json.dump(obj)
+       return url_safe_encrypt_str(obj_str)
+   
+   def url_safe_encrypt_str(data):
+       encrypted_bytes = encrypt(data)
+       return base64.urlsafe_b64encode(encrypted_bytes)
+   
+   def encrypt(data):
+       cipher = make_cipher()
+       encrypted_bytes = cipher.update(data)
+       encrypted_bytes += cipher.final()
+       return encrypted_bytes
+   
+   def make_cipher():
+       return Cipher("aes_128_cbc", key=PRIVATE_KEY, init_vector=INIT_VECTOR, op=ENCODE)
+   
+   ```
+
+
+## その他
+
+### 短いコードを書く
+
+- [ ]  不必要な機能は削除する。過剰な機能は不要。
+- [ ]  問題（POからの要望）を最も簡単に解決できる対応を考える。
+- [ ]  定期的に全てのAPIを読んで、標準ライブラリを使えるようにする。
