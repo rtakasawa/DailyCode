@@ -78,7 +78,49 @@
     - 以下の名前は軽量な処理が期待される
         - get
         - size
-    - 
+
+- Ruby/Ruby on Rails  
+ - model
+     - [ ] 品詞にする 
+     - [ ] 2つの単語をつなげてモデルを作る場合は、形容詞+名詞 or 名詞 + 名詞 
+   - method
+     - [ ] 処理を実行するメソッドは、動詞のみ or 動詞 + 名詞
+     - [ ] 注意：動詞で始めるのは、あくまで「処理を実行するメソッド」が対象
+       ```ruby
+       # 「処理を実行するメソッド」ではないメソッド例
+       
+       # 名と姓を返す
+       def full_name
+       end
+       
+       # メール受信者が何かアクションを起こす必要があればtrue
+       mail.action_required?
+       
+       # 文字列をDate型に変換する
+       to_date('2021-1-1')
+       
+       class Member < ApplicationRecord
+        # チームメンバーが規定の人数を超えていないことを検証する
+        validate :member_count_should_not_exceed, on: :create
+       end
+       ```
+     - [ ] 状態を表したい場合は、名詞+動詞の過去分詞形
+       ```ruby
+       # bad
+       gate.need_password
+       
+       # good
+       gate.password_required
+       ```
+     - 論理値（trueかfalseのいずれか）のみを返すメソッド
+        - [ ] 末尾に疑問符を置く
+        - [ ] 冒頭にisやdoesやcanといった助動詞はなるべく置かないようにする
+   - その他
+     - [ ] 不可算名詞（複数形の無い名詞）の使用は極力避ける
+   - 引用元
+     - [モデルやメソッドに名前を付けるときは英語の品詞に気をつけよう](https://qiita.com/jnchito/items/459d58ba652bf4763820)
+     - [Rubyスタイルガイドを読む: 命名](https://techracho.bpsinc.jp/hachi8833/2017_02_13/35364#3)
+
 ## スタイル
 
 - [ ]  改行位置は揃っているか
