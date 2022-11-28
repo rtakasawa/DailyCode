@@ -191,105 +191,105 @@
    ```
 
 - Ruby/Ruby on Rails
-  - クラス定義
-    - [ ]  定義の順番
-       ```ruby
-       class Person
-         # extendとincludeは他の要素より先に書く
-         extend SomeModule
-         include AnotherModule
-         
-         # インナークラス定義は最初に書く
-         CustomError = Class.new(StandardError)
-         
-         # 定数はその次に書く
-         SOME_CONSTANT = 20
-         
-         # 属性マクロはその次に書く
-         attr_reader :name
-         
-         # その他のマクロがあればここに書く
-         validates :name
-         
-         # publicなクラスメソッドはその次にインライン形式で書く（class << selfでもよい: 後述）
-         def self.some_method
+    - クラス定義
+      - [ ]  定義の順番
+         ```ruby
+         class Person
+           # extendとincludeは他の要素より先に書く
+           extend SomeModule
+           include AnotherModule
+           
+           # インナークラス定義は最初に書く
+           CustomError = Class.new(StandardError)
+           
+           # 定数はその次に書く
+           SOME_CONSTANT = 20
+           
+           # 属性マクロはその次に書く
+           attr_reader :name
+           
+           # その他のマクロがあればここに書く
+           validates :name
+           
+           # publicなクラスメソッドはその次にインライン形式で書く（class << selfでもよい: 後述）
+           def self.some_method
+           end
+           
+           # 初期化メソッドはクラスメソッドと他のインスタンスメソッドの間に書く
+           def initialize
+           end
+           
+           # publicなインスタンスメソッドはその後に書く
+           def some_method
+           end
+           
+           # protectedメソッドやprivateメソッドは末尾にまとめる
+           protected
+           
+           def some_protected_method
+           end
+           
+           private
+           
+           def some_private_method
+           end
+         end
+         ```
+      - [ ]  mixinが複数ある場合は別々に書く
+         ```ruby
+         # bad
+         class Person
+           include Foo, Bar # 複数のmixinが1行で書かれている
          end
          
-         # 初期化メソッドはクラスメソッドと他のインスタンスメソッドの間に書く
-         def initialize
+         # good
+         class Person
+           include Foo      # mixinは1行ずつ分けて書く
+           include Bar
+         end
+         ```
+      - [ ]  1つのファイル内に複数行の大きなクラスを複数定義しない
+         ```ruby
+         # bad
+      
+         # foo.rb
+         class Foo
+           class Bar
+           # メソッドが30ほどある
+           end
+           
+           class Car
+           # メソッドが20ほどある
+           end
+           
+           #   メソッドが30ほどある
          end
          
-         # publicなインスタンスメソッドはその後に書く
-         def some_method
+         
+         # good
+         
+         # foo.rb
+         class Foo
+           #   メソッドが30ほどある
          end
          
-         # protectedメソッドやprivateメソッドは末尾にまとめる
-         protected
-         
-         def some_protected_method
+         # foo/bar.rb
+         class Foo
+           class Bar
+            # メソッドが30ほどある
+           end
          end
          
-         private
-         
-         def some_private_method
+         # foo/car.rb
+         class Foo
+           class Car
+            # メソッドが20ほどある
+           end
          end
-       end
-       ```
-    - [ ]  mixinが複数ある場合は別々に書く
-       ```ruby
-       # bad
-       class Person
-         include Foo, Bar # 複数のmixinが1行で書かれている
-       end
-       
-       # good
-       class Person
-         include Foo      # mixinは1行ずつ分けて書く
-         include Bar
-       end
-       ```
-    - [ ]  1つのファイル内に複数行の大きなクラスを複数定義しない
-       ```ruby
-       # bad
-
-       # foo.rb
-       class Foo
-         class Bar
-         # メソッドが30ほどある
-         end
-         
-         class Car
-         # メソッドが20ほどある
-         end
-         
-         #   メソッドが30ほどある
-       end
-       
-       
-       # good
-       
-       # foo.rb
-       class Foo
-         #   メソッドが30ほどある
-       end
-       
-       # foo/bar.rb
-       class Foo
-         class Bar
-          # メソッドが30ほどある
-         end
-       end
-       
-       # foo/car.rb
-       class Foo
-         class Car
-          # メソッドが20ほどある
-         end
-       end
-       ```
-    - [ ]  クラスメソッドしか持たないクラスは、モジュールに書き換えるのが望ましい
+         ```
+      - [ ]  クラスメソッドしか持たないクラスは、モジュールに書き換えるのが望ましい
   - 引用元
-     - [【保存版】Rubyスタイルガイド（日本語・解説付き）総もくじ](https://techracho.bpsinc.jp/hachi8833/2017_05_15/38869)
+      - [【保存版】Rubyスタイルガイド（日本語・解説付き）総もくじ](https://techracho.bpsinc.jp/hachi8833/2017_05_15/38869)
 
 ## コメント
 
