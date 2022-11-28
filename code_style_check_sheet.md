@@ -79,47 +79,47 @@
         - get
         - size
 
-- Ruby/Ruby on Rails  
-   - model
-     - [ ] 品詞にする 
-     - [ ] 2つの単語をつなげてモデルを作る場合は、形容詞+名詞 or 名詞 + 名詞 
-   - method
-     - [ ] 処理を実行するメソッドは、動詞のみ or 動詞 + 名詞
-     - [ ] 注意：動詞で始めるのは、あくまで「処理を実行するメソッド」が対象
-       ```ruby
-       # 「処理を実行するメソッド」ではないメソッド例
-       
-       # 名と姓を返す
-       def full_name
-       end
-       
-       # メール受信者が何かアクションを起こす必要があればtrue
-       mail.action_required?
-       
-       # 文字列をDate型に変換する
-       to_date('2021-1-1')
-       
-       class Member < ApplicationRecord
-        # チームメンバーが規定の人数を超えていないことを検証する
-        validate :member_count_should_not_exceed, on: :create
-       end
-       ```
-     - [ ] 状態を表したい場合は、名詞+動詞の過去分詞形
-       ```ruby
-       # bad
-       gate.need_password
-       
-       # good
-       gate.password_required
-       ```
-     - 論理値（trueかfalseのいずれか）のみを返すメソッド
-        - [ ] 末尾に疑問符を置く
-        - [ ] 冒頭にisやdoesやcanといった助動詞はなるべく置かないようにする
-   - その他
-     - [ ] 不可算名詞（複数形の無い名詞）の使用は極力避ける
-   - 引用元
-     - [モデルやメソッドに名前を付けるときは英語の品詞に気をつけよう](https://qiita.com/jnchito/items/459d58ba652bf4763820)
-     - [Rubyスタイルガイドを読む: 命名](https://techracho.bpsinc.jp/hachi8833/2017_02_13/35364#3)
+### Ruby/Ruby on Rails
+- model
+  - [ ] 品詞にする 
+  - [ ] 2つの単語をつなげてモデルを作る場合は、形容詞+名詞 or 名詞 + 名詞 
+- method
+  - [ ] 処理を実行するメソッドは、動詞のみ or 動詞 + 名詞
+  - [ ] 注意：動詞で始めるのは、あくまで「処理を実行するメソッド」が対象
+    ```ruby
+    # 「処理を実行するメソッド」ではないメソッド例
+         
+    # 名と姓を返す
+    def full_name
+    end
+         
+    # メール受信者が何かアクションを起こす必要があればtrue
+    mail.action_required?
+         
+    # 文字列をDate型に変換する
+    to_date('2021-1-1')
+         
+    class Member < ApplicationRecord
+     # チームメンバーが規定の人数を超えていないことを検証する
+     validate :member_count_should_not_exceed, on: :create
+    end
+    ```
+  - [ ] 状態を表したい場合は、名詞+動詞の過去分詞形
+    ```ruby
+    # bad
+    gate.need_password
+        
+    # good
+    gate.password_required
+    ```
+  - 論理値（trueかfalseのいずれか）のみを返すメソッド
+    - [ ] 末尾に疑問符を置く
+    - [ ] 冒頭にisやdoesやcanといった助動詞はなるべく置かないようにする
+- その他
+  - [ ] 不可算名詞（複数形の無い名詞）の使用は極力避ける
+- 引用元
+  - [モデルやメソッドに名前を付けるときは英語の品詞に気をつけよう](https://qiita.com/jnchito/items/459d58ba652bf4763820)
+  - [Rubyスタイルガイドを読む: 命名](https://techracho.bpsinc.jp/hachi8833/2017_02_13/35364#3)
 
 ## スタイル
 
@@ -190,106 +190,106 @@
    }
    ```
 
-- Ruby/Ruby on Rails
-    - クラス定義
-      - [ ]  定義の順番
-         ```ruby
-         class Person
-           # extendとincludeは他の要素より先に書く
-           extend SomeModule
-           include AnotherModule
-           
-           # インナークラス定義は最初に書く
-           CustomError = Class.new(StandardError)
-           
-           # 定数はその次に書く
-           SOME_CONSTANT = 20
-           
-           # 属性マクロはその次に書く
-           attr_reader :name
-           
-           # その他のマクロがあればここに書く
-           validates :name
-           
-           # publicなクラスメソッドはその次にインライン形式で書く（class << selfでもよい: 後述）
-           def self.some_method
-           end
-           
-           # 初期化メソッドはクラスメソッドと他のインスタンスメソッドの間に書く
-           def initialize
-           end
-           
-           # publicなインスタンスメソッドはその後に書く
-           def some_method
-           end
-           
-           # protectedメソッドやprivateメソッドは末尾にまとめる
-           protected
-           
-           def some_protected_method
-           end
-           
-           private
-           
-           def some_private_method
-           end
-         end
-         ```
-      - [ ]  mixinが複数ある場合は別々に書く
-         ```ruby
-         # bad
-         class Person
-           include Foo, Bar # 複数のmixinが1行で書かれている
-         end
+### Ruby/Ruby on Rails
+- クラス定義
+  - [ ]  定義の順番
+     ```ruby
+     class Person
+       # extendとincludeは他の要素より先に書く
+       extend SomeModule
+       include AnotherModule
          
-         # good
-         class Person
-           include Foo      # mixinは1行ずつ分けて書く
-           include Bar
-         end
-         ```
-      - [ ]  1つのファイル内に複数行の大きなクラスを複数定義しない
-         ```ruby
-         # bad
-      
-         # foo.rb
-         class Foo
-           class Bar
-           # メソッドが30ほどある
-           end
+       # インナークラス定義は最初に書く
+       CustomError = Class.new(StandardError)
+         
+       # 定数はその次に書く
+       SOME_CONSTANT = 20
+         
+       # 属性マクロはその次に書く
+       attr_reader :name
+         
+       # その他のマクロがあればここに書く
+       validates :name
            
-           class Car
-           # メソッドが20ほどある
-           end
+       # publicなクラスメソッドはその次にインライン形式で書く（class << selfでもよい: 後述）
+       def self.some_method
+       end
+         
+       # 初期化メソッドはクラスメソッドと他のインスタンスメソッドの間に書く
+       def initialize
+       end
+         
+       # publicなインスタンスメソッドはその後に書く
+       def some_method
+       end
            
-           #   メソッドが30ほどある
-         end
+       # protectedメソッドやprivateメソッドは末尾にまとめる
+       protected
+           
+       def some_protected_method
+       end
+           
+       private
+           
+       def some_private_method
+       end
+     end
+     ```
+  - [ ]  mixinが複数ある場合は別々に書く
+     ```ruby
+     # bad
+     class Person
+      include Foo, Bar # 複数のmixinが1行で書かれている
+     end
          
+     # good
+     class Person
+       include Foo      # mixinは1行ずつ分けて書く
+       include Bar
+     end
+     ```
+  - [ ]  1つのファイル内に複数行の大きなクラスを複数定義しない
+     ```ruby
+     # bad
          
-         # good
-         
-         # foo.rb
-         class Foo
-           #   メソッドが30ほどある
-         end
-         
-         # foo/bar.rb
-         class Foo
-           class Bar
-            # メソッドが30ほどある
-           end
-         end
-         
-         # foo/car.rb
-         class Foo
-           class Car
-            # メソッドが20ほどある
-           end
-         end
-         ```
-      - [ ]  クラスメソッドしか持たないクラスは、モジュールに書き換えるのが望ましい
+     # foo.rb
+     class Foo
+       class Bar
+       # メソッドが30ほどある
+       end
+            
+       class Car
+       # メソッドが20ほどある
+       end
+            
+       #   メソッドが30ほどある
+     end
+          
+          
+     # good
+          
+     # foo.rb
+     class Foo
+       #   メソッドが30ほどある
+     end
+          
+     # foo/bar.rb
+     class Foo
+       class Bar
+        # メソッドが30ほどある
+       end
+     end
+          
+     # foo/car.rb
+     class Foo
+       class Car
+        # メソッドが20ほどある
+       end
+     end
+     ```
+  - [ ]  クラスメソッドしか持たないクラスは、モジュールに書き換えるのが望ましい
   - 引用元
-      - [【保存版】Rubyスタイルガイド（日本語・解説付き）総もくじ](https://techracho.bpsinc.jp/hachi8833/2017_05_15/38869)
+     - [【保存版】Rubyスタイルガイド（日本語・解説付き）総もくじ](https://techracho.bpsinc.jp/hachi8833/2017_05_15/38869)
 
 ## コメント
 
@@ -743,9 +743,68 @@
        return Cipher("aes_128_cbc", key=PRIVATE_KEY, init_vector=INIT_VECTOR, op=ENCODE)
    
    ```
+### Ruby/Ruby on Rails
+- [ ]  アクセサ（読み取り用）やミューテタ（書き込み用）には属性名をそのまま使う
+```ruby
+# bad
+class Person
+  def get_name
+    "#{@first_name} #{@last_name}"
+  end
+  
+  def set_name(name)
+    @first_name, @last_name = name.split(' ')
+  end
+end
 
+# good
+class Person
+  def name
+    "#{@first_name} #{@last_name}"
+  end
+  
+  # ミューテターには属性名=を使う
+  def name=(name)
+    @first_name, @last_name = name.split(' ')
+  end
+end
+```
+- 引用元
+    - [【保存版】Rubyスタイルガイド（日本語・解説付き）総もくじ](https://techracho.bpsinc.jp/hachi8833/2017_05_15/38869)
 
 ## その他
+### クラス設計
+#### Ruby/Ruby on Rails
+- [ ]  使い捨てのクラス定義には'Struct.new'を使う
+```ruby
+class Person
+  attr_accessor :first_name, :last_name
+
+  def initialize(first_name, last_name)
+    @first_name = first_name
+    @last_name = last_name
+  end
+end
+
+# 上記は以下で書ける
+Person = Struct.new(:first_name, :last_name) do
+end
+```
+- [ ]  'Struct.new'を継承しない。ループの中で使わない。
+```ruby
+# bad
+class Person < Struct.new(:first_name, :last_name)
+end
+```
+- [ ]  特別な前処理が必要なクラスはファクトリメソッドの追加を検討する。
+```ruby
+class Person
+  # ファクトリメソッド
+  def self.create(options_hash)
+    # 特別な前処理
+  end
+end
+```
 
 ### 短いコードを書く
 
