@@ -773,6 +773,11 @@ end
     - [【保存版】Rubyスタイルガイド（日本語・解説付き）総もくじ](https://techracho.bpsinc.jp/hachi8833/2017_05_15/38869)
 
 ## その他
+### 短いコードを書く
+- [ ]  不必要な機能は削除する。過剰な機能は不要。
+- [ ]  問題（POからの要望）を最も簡単に解決できる対応を考える。
+- [ ]  定期的に全てのAPIを読んで、標準ライブラリを使えるようにする。
+
 ### クラス設計
 #### Ruby/Ruby on Rails
 - [ ]  使い捨てのクラス定義には'Struct.new'を使う
@@ -806,12 +811,54 @@ class Person
 end
 ```
 
-### 短いコードを書く
+### 例外
+#### Ruby/Ruby on Rails
+- [ ] raiseの引数には、例外クラスとメッセージの2つの引数を与えるのが望ましい
+```ruby
+# good
+# 例外クラスとメッセージを渡すことで、'backtrace'が利用できる
+raise SomeException, 'message'
+```
 
-- [ ]  不必要な機能は削除する。過剰な機能は不要。
-- [ ]  問題（POからの要望）を最も簡単に解決できる対応を考える。
-- [ ]  定期的に全てのAPIを読んで、標準ライブラリを使えるようにする。
+- [ ]  例外処理の共通化
+```ruby
+# bad
+begin
+  something_that_might_fail
+rescue
+  # IOErrorの処理
+end
+
+begin
+  something_else_that_might_fail
+rescue
+  # IOErrorの処理
+end
+
+# good
+def with_error_handling
+  yield
+rescue IOError
+  # IOErrorの処理
+end
+
+# 実行コード
+# - IOError処理を検証したいメソッドを、with_error_handlingに{}で渡せば、検証できる（共通化）
+with_error_handling { something_that_might_fail }
+```
+
+- [ ]  プログラムで取得した外部リソースは、必ずensureブロックで解放する。または、自動でクリーンアップするタイプのものを使う。
+```ruby
+f = File.open('test')
+begin
+rescue
+ensure
+  f.close if f
+end
+```
 
 
 ## 引用文献
 - リーダブルコード
+- [【保存版】Rubyスタイルガイド（日本語・解説付き）総もくじ](https://techracho.bpsinc.jp/hachi8833/2017_05_15/38869)
+- [モデルやメソッドに名前を付けるときは英語の品詞に気をつけよう](https://qiita.com/jnchito/items/459d58ba652bf4763820)
