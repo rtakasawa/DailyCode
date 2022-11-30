@@ -778,6 +778,79 @@ end
 - [ ]  問題（POからの要望）を最も簡単に解決できる対応を考える。
 - [ ]  定期的に全てのAPIを読んで、標準ライブラリを使えるようにする。
 
+### Hash/Array
+#### Ruby/Ruby on Rails
+- [ ]  ハッシュのキーの存在を前提にする場合はHash#fetchを使うこと
+```ruby
+heroes = { batman: 'Bruce Wayne', superman: 'Clark Kent' }
+# bad キーが無効でもエラーにならない
+heroes[:batman] # => 'Bruce Wayne'
+heroes[:supermann] # => nil
+
+# good KeyErrorでキーがないことを検出できる
+heroes.fetch(:supermann)
+```
+
+- [ ]  ハッシュ値のデフォルト値が欲しい場合はHash#fetchでデフォルト値を与えること
+```ruby
+batman = { name: 'Bruce Wayne', is_evil: false }
+
+# bad
+# ||演算子ではハッシュの値がfalseと同値の場合に正しく処理されない
+batman[:is_evil] || true # => true
+
+# good
+# ハッシュの値がfalseと同値であっても正常に処理できる
+batman.fetch(:is_evil, true) # => false
+```
+
+- [ ]  Hash#fetchでデフォルト値を与える場合に、デフォルト値が重い処理の場合の対応
+```ruby
+batman = { name: 'Bruce Wayne' }
+
+# bad 
+# `Hash#fetch`のデフォルト値にコードを設定すると毎回評価されてしまう
+# このため繰り返しが多いと速度が低下する
+batman.fetch(:powers, obtain_batman_powers) # obtain_batman_powersでは重たい処理を行うとする
+
+# good
+# ブロックで与えたコードは遅延評価されるので、KeyError発生時以外は評価されない
+batman.fetch(:powers) { obtain_batman_powers }
+```
+
+- [ ]  コレクションにはできるだけ[n]以外の読み出しメソッドでアクセスすること
+```ruby
+str = "This is Regexp"
+/That is Regexp/ =~ str
+p Regexp.last_match # => nil
+
+begin
+  p Regexp.last_match[1] # 例外が発生する
+rescue
+  puts $! # => undefined method `[]' for nil:NilClass
+end
+
+p Regexp.last_match(1) # => nil（例外ではない！！）
+```
+
+- [ ]  コレクションにアクセサを実装する場合はnilチェックすること
+```ruby
+# bad
+def awesome_things
+  @awesome_things
+end
+
+# good
+# コレクションにnilでアクセスしないよう、メソッド側で対応
+def awesome_things(index = nil)
+  if index && @awesome_things
+    @awesome_things[index]
+  else
+    @awesome_things
+  end
+end
+```
+
 ### クラス設計
 #### Ruby/Ruby on Rails
 - [ ]  使い捨てのクラス定義には'Struct.new'を使う
