@@ -778,6 +778,145 @@ end
 - [ ]  問題（POからの要望）を最も簡単に解決できる対応を考える。
 - [ ]  定期的に全てのAPIを読んで、標準ライブラリを使えるようにする。
 
+### 文字列
+#### Ruby/Ruby on Rails
+- [ ]  文字列の結合は+ではなく、式展開と文字列フォーマットが望ましい
+```ruby
+# bad
+email_with_name = user.name + ' <' + user.email + '>'
+
+# good
+email_with_name = "#{user.name} <#{user.email}>"
+
+# good
+email_with_name = format('%s <%s>', user.name, user.email)
+```
+
+- [ ]  大きなデータの作成にはString#+ではなく、String#<<を使うこと
+```ruby
+# bad
+html = ''
+html += '<h1>Page title</h1>'
+
+paragraphs.each do |paragraph|
+  html += "<p>#{paragraph}</p>"
+end
+
+# good
+html = ''
+# <<の方が早い
+html << '<h1>Page title</h1>'
+
+paragraphs.each do |paragraph|
+  html << "<p>#{paragraph}</p>"
+end
+```
+
+- [ ]  文字列置き換えや削除は可能な限りString#gsub以外のメソッドを使うこと
+```ruby
+url = 'http://example.com'
+str = 'lisp-case-rules'
+
+# bad
+# gsubはパフォーマンス上、不利
+url.gsub('http://', 'https://')
+str.gsub('-', '_')
+
+# good
+url.sub('http://', 'https://')
+str.tr('-', '_')
+```
+
+### 正規表現
+#### Ruby/Ruby on Rails
+- [ ]  正規表現は本当に必要なときにだけ使うこと
+```ruby
+str = "Hello, Ruby!"
+
+# bad
+if str[/Hello/].nil?
+  （省略）
+end
+
+# good
+if str['Hello'].nil?
+  （省略）
+end
+
+# more_good
+if str.includes? 'Hello'
+  （省略）
+end
+```
+
+- [ ]  コードをシンプルにするために、文字列のインデックスに正規表現を直接書いてもよい
+```ruby
+str = 'Hello, Ruby'
+
+puts match = str[/[Hh]ello/]                # 正規表現にマッチする部分文字列をstrから取り出す
+#=> "Hello"
+
+puts first_group = str[/^Hello, (.+?)$/, 1] # キャプチャグループ1を取り出す
+#=> "Ruby"
+
+str[/^Hello, (.+?)$/, 1] = 'MRI'            # strのキャプチャグループ1を置き換える
+puts str
+#=> "Hello, MRI"
+```
+
+- [ ]  最後にマッチしたグループの取り出しにPerl由来の$記法（$1や$2など）を使わないこと
+```ruby
+/(regexp)/ =~ string
+
+# bad
+# 可読性が落ちる
+process $1
+
+# good
+process Regexp.last_match(1)
+```
+
+- [ ]  キャプチャグループは番号での指定ではなく名前付きグループでの指定が望ましい
+```ruby
+# bad
+/(regexp)/ =~ string
+# （何かする）
+process Regexp.last_match(1)
+
+# good
+/(?<meaningful_var>regexp)/ =~ string
+# （何かする）
+process meaningful_var
+```
+
+- [ ]  パターンの冒頭と末尾は^や$ではなく、\Aと\zで表すこと
+```ruby
+string = "some injection\nusername"
+string[/^username$/]   # マッチしてしまう
+string[/\Ausername\z/] # マッチしない
+```
+※参考：https://blog.tokumaru.org/2014/03/z.html
+
+- [ ]  複雑な正規表現はx修飾子で読みやすくすること
+```ruby
+# 可読性が上がる
+# スペースを直接書けなくなるので、\sなどで表す必要あり
+regexp = /
+  start         # テキスト
+  \s            # スペース文字
+  (group)       # 最初のキャプチャグループ
+  (?:alt1|alt2) # 文字列のいずれかに一致
+  end
+/x
+```
+
+- [ ] 複雑な置換では、#subや#gsubにブロックやハッシュを与えてもよい
+```ruby
+words = 'foo bar'
+words.sub(/f/, 'f' => 'F')                   # => 'Foo bar' （ハッシュを与える場合）
+words.gsub(/\w+/) { |word| word.capitalize } # => 'Foo Bar' （ブロックを与える場合）
+```
+
 ### Hash/Array
 #### Ruby/Ruby on Rails
 - [ ]  ハッシュのキーの存在を前提にする場合はHash#fetchを使うこと
