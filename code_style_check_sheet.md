@@ -1069,8 +1069,54 @@ ensure
 end
 ```
 
+### その他
+#### Ruby/Ruby on Rails
+- [ ]  `options = {} `引数は軽々しく使わない
+```ruby
+# bad
+def some_method(options = {})
+  bar = options.fetch(:bar, false)
+  puts bar
+end
+
+# good
+# キーワードを引数を使う
+def some_method(bar: false)
+  puts bar
+end
+
+some_method            # => false
+some_method(bar: true) # => true
+```
+※参考：[Railsフレームワークで多用される「options = {} 」引数は軽々しく真似しない方がいいという話](https://techracho.bpsinc.jp/hachi8833/2017_03_22/37313)
+
+- [ ]  1つのメソッドのコードは10行以内に収めること
+- [ ]  引数は最大5個までにする
+- [ ]  理由がない限り、状態の保持を避けて関数的に書くこと
+```ruby
+# bad
+a = []
+[1, 2, 3].each { |i| a << i * 2 }
+
+# good
+a = [1, 2, 3].map { |i| i * 2 }
+
+# bad
+a = {}
+[1, 2, 3].each { |i| a[i] = i * 17 }
+
+# good
+a = [1, 2, 3].reduce({}) { |h, i| h[i] = i * 17; h }
+a = [1, 2, 3].each_with_object({}) { |i, h| h[i] = i * 17 }
+```
+- [ ]  受け取った引数を変更しないこと（破壊的なメソッドを除く） 
+- [ ]  ブロックのネストは3階層までにする
+- [ ]  コーディングスタイルを一貫させること
+  過去のコードをそのままに途中からスタイルを変えるのはよくありません。
+
 
 ## 引用文献
 - リーダブルコード
 - [【保存版】Rubyスタイルガイド（日本語・解説付き）総もくじ](https://techracho.bpsinc.jp/hachi8833/2017_05_15/38869)
 - [モデルやメソッドに名前を付けるときは英語の品詞に気をつけよう](https://qiita.com/jnchito/items/459d58ba652bf4763820)
+- [Railsフレームワークで多用される「options = {} 」引数は軽々しく真似しない方がいいという話](https://techracho.bpsinc.jp/hachi8833/2017_03_22/37313)
