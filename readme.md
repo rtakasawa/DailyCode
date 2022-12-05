@@ -105,3 +105,7 @@
 #### File
 - zip_fileを解凍して,中身（file）をDB（ActiveStorage）に保存する
   - [code](https://github.com/rtakasawa/DailyCode/blob/master/ruby/File/unzip.rb)
+
+### AWS
+#### ECS
+- [SIGTERMシグナルを処理するShellハンドラーの解読](https://github.com/rtakasawa/DailyCode/blob/master/bash/graceful-shutdowns-with-ecs.md)
