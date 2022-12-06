@@ -98,9 +98,10 @@
 - Strategy
   - [code](https://github.com/rtakasawa/DailyCode/blob/master/design_pattern/java_convert/strategy.rb)    
 
-### Ruby
+### Ruby / Rails
 - RailsサーバとRedisとSidekiqの関係（図）
   - [image](https://github.com/rtakasawa/DailyCode/blob/9bf3b1960bc4360cad6fc97f2a9c2bfa60746754/images/rails_redis_sidekiq.png)
+- [既存テーブルにNOT NULL制約有のカラムを追加する場合のmigrationファイルの書き方（gem`paranoia`使用時）](https://github.com/rtakasawa/DailyCode/blob/master/ruby/db/add_not_null_column_use_paranoia.md)
 
 #### File
 - zip_fileを解凍して,中身（file）をDB（ActiveStorage）に保存する
