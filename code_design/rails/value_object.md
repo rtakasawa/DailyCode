@@ -98,6 +98,71 @@ end
 ```
 
 ## Valueオブジェクトの使い方（Railsアプリケーション）
+- 『名前』に関するValueオブジェクトをRailsアプリケーションに導入してみる
+- RailsのActiveRecord::Baseには`#composed_of`というメソッドがある
+  - 複数のカラムを擬似的にひとつのカラムとして扱うためのメソッド
+  - Valueオブジェクトを表すのに適している
+### 実装例
+```ruby
+# ファイルは app/values 下に配置する
+# ファイル名はValueオブジェクトの名前にする。ここでは name.rb
+class Name
+  attr_reader :first_name, :last_name
+
+  def initialize(first_name, last_name)
+    @first_name = first_name
+    @last_name = last_name
+  end
+
+  def full_name
+    "#{first_name} #{last_name}"
+  end
+end
+```
+
+```ruby
+class User < ApplicationRecord
+  # 第一引数には属性名をシンボルで渡す。この属性名からクラス名を推測する。
+  # ここでは :name なので Nameクラスを指定している
+
+  # :mapping オプションでUserクラスとNameクラスの属性のマッピングを行う。
+  # ここではUserクラスにおける first_name がNameクラスにおける first_name に対応する
+  composed_of :name, mapping: [%w(first_name first_name), %w(last_name last_name)]
+end
+```
+
+### 参考: Valueオブジェクトを用いた検索
+- 上記のように`#composed_of`でValueオブジェクトを設定すると、Valueオブジェクトを用いた検索も行える
+```ruby
+users = User.where(name: Name.new('Taro', 'Yamada'))
+```
+
+## Valueオブジェクトのユースケース
+- ある値が抽象化できる概念であり、かつ複数のクラスから属性として参照されるケースで利用する
+- 例
+  - 複数の値を組み合わせてひとつの値を算出するもの
+    - 名前における姓名やミドルネーム
+    - 住所における国や県・市区町村
+  - 値の表現や比較を行うもの
+    - 日付
+    - 通貨
+    - 気温
+    - 商品のレビューにおける星の数
+
+## いつValueオブジェクトを導入するか
+- その値オブジェクトを複数のクラスから利用することになったら導入する
+
+## Valueオブジェクトの設計上のルール
+- ファイルは app/values 下に配置する 
+- ファイル名はValueオブジェクトの名前にする。
+  - たとえば name.rb
+- 値オブジェクトをカプセル化する目的でつくる
+- クラス名はなんの値オブジェクトかがわかるようにする。
+  - たとえばNameやAddressなど。
+  - NameValueのような接尾辞はつけない
+- 必要最低限のインタフェースのみを公開する。
+  - たとえば full_name など
+- 公開したインタフェースに対するユニットテストを書く
 
 
 ## 引用

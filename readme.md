@@ -12,6 +12,9 @@
 - 引数の順番を覚えなる責務をなくす方法
   - [code](https://github.com/rtakasawa/DailyCode/blob/master/code_design/argument.rb)
 
+### Rails
+- [Valueオブジェクト](https://github.com/rtakasawa/DailyCode/blob/master/code_design/rails/value_object.md)
+
 ### design_pattern
 - アダプタ
   - using_scene
