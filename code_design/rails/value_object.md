@@ -9,13 +9,18 @@
 
 
 - エンティティ  
-あるオブジェクトが持つ値が同じなら同一だと言えるもの
+  - あるオブジェクトが持つ値が同じなら同一だと言えるもの
 - 値オブジェクト  
 同一性を判断できない情報
+
 
 - エンティティと値オブジェクトの例
   - 人：エンティティ
   - 名前、住所：値オブジェクト
+  
+
+- Railsのモデルのインスタンスは、idを識別子とするエンティティ
+- id以外の属性は、値オブジェクト（だと思う）
 
 ## なぜValueオブジェクトが必要か
 - クラスを責務で分離し、コードをクリーンに保つために必要
@@ -98,11 +103,11 @@ end
 ```
 
 ## Valueオブジェクトの使い方（Railsアプリケーション）
+### 実装例
 - 『名前』に関するValueオブジェクトをRailsアプリケーションに導入してみる
 - RailsのActiveRecord::Baseには`#composed_of`というメソッドがある
   - 複数のカラムを擬似的にひとつのカラムとして扱うためのメソッド
   - Valueオブジェクトを表すのに適している
-### 実装例
 ```ruby
 # ファイルは app/values 下に配置する
 # ファイル名はValueオブジェクトの名前にする。ここでは name.rb
@@ -131,10 +136,67 @@ class User < ApplicationRecord
 end
 ```
 
-### 参考: Valueオブジェクトを用いた検索
+#### 参考: Valueオブジェクトを用いた検索
 - 上記のように`#composed_of`でValueオブジェクトを設定すると、Valueオブジェクトを用いた検索も行える
 ```ruby
 users = User.where(name: Name.new('Taro', 'Yamada'))
+```
+
+### 実装例2
+- phone_number（電話番号）という文字列属性を持つUserモデル
+- Userの持つ電話番号が携帯電話番号のものかを判別したい
+#### valueオブジェクト導入前
+- 電話番号に関するロジックをモデルに実装する例
+```ruby
+# == Schema Information
+#
+# Table name: users
+#
+#  id           :bigint           not null, primary key
+#  phone_number :string           not null
+#  created_at   :datetime         not null
+#  updated_at   :datetime         not null
+#
+
+class User < ApplicationRecord
+  validates :phone_number, format: { with: /\A0\d{9,10}\z/ }
+  
+  def mobile_phone_number?
+    phone_number.match?(/\A0[7-9]0\d{8}\z/)
+  end
+end
+```
+- 懸念点
+  - 値（属性）に関するロジックをモデルに実装すると、モデルが肥大化する
+  - 別のモデルでも「電話番号が携帯電話番号のものかを判別したい」という場合、同じロジックを複数モデルに定義する必要がある
+
+#### valueオブジェクト導入後
+- 電話番号に関するロジックを値オブジェクトに実装
+```ruby
+class PhoneNumber
+  attr_reader :value
+  delegate :hash, to: :value
+
+  def initialize(value)
+    raise "Phone number is invalid" unless value.match?(/\A0\d{9,10}\z/)
+    @value = value.frozen? ? value : value.dup.freeze
+  end
+
+  def ==(other)
+    self.class == other.class && value == other.value
+  end
+  alias eql? ==
+
+  def mobile?
+    value.match?(/\A0[7-9]0\d{8}\z/)
+  end
+end
+```
+- 値オブジェクトを利用するUserモデル
+```ruby
+class User < ApplicationRecord
+  composed_of :phone_number, mapping: %w[phone_number value]
+end
 ```
 
 ## Valueオブジェクトのユースケース
@@ -150,7 +212,7 @@ users = User.where(name: Name.new('Taro', 'Yamada'))
     - 商品のレビューにおける星の数
 
 ## いつValueオブジェクトを導入するか
-- その値オブジェクトを複数のクラスから利用することになったら導入する
+- 値オブジェクトを複数のクラスから利用することになったら導入する
 
 ## Valueオブジェクトの設計上のルール
 - ファイルは app/values 下に配置する 
@@ -164,6 +226,10 @@ users = User.where(name: Name.new('Taro', 'Yamada'))
   - たとえば full_name など
 - 公開したインタフェースに対するユニットテストを書く
 
+## 学習した感想
+- モデルの属性に関するロジックを、別クラスに切り出すことで、モデルの肥大化を防ぐということかも
+- ただし、全部別クラスに切り出すとクラスが増えてコードを追いづらくなるので、`値オブジェクトを複数のクラスから利用することになったら導入する`となるのかな
 
 ## 引用
-[Railsのデザインパターン: Valueオブジェクト](https://applis.io/posts/rails-design-pattern-value-objects)
+- [Railsのデザインパターン: Valueオブジェクト](https://applis.io/posts/rails-design-pattern-value-objects)
+- [パーフェクトRuby on Rails](https://gihyo.jp/book/2020/978-4-297-11462-6)
