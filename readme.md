@@ -16,6 +16,7 @@
 - [Valueオブジェクト](https://github.com/rtakasawa/DailyCode/blob/master/code_design/rails/value_object.md)
 - [サービスオブジェクト](https://github.com/rtakasawa/DailyCode/blob/master/code_design/rails/service_object.md)
 - [Formオブジェクト](https://github.com/rtakasawa/DailyCode/blob/master/code_design/rails/form_object.md)
+- [共通のバリデーションルールを定義](https://github.com/rtakasawa/DailyCode/blob/master/code_design/rails/validator.md)
 
 ### design_pattern
 - アダプタ
